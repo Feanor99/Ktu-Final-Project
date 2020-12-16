@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/deprem_hazirlik.dart';
+import 'package:flutter_app/screens/deprem_liste.dart';
+import 'package:flutter_app/services/deprem_verileri.dart';
+
+import 'models/shake.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,6 +58,11 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("Deprem hazırlık"),
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => DepremHazirlik())),
+            ),
+            ElevatedButton(
+              child: Text("veri safasina git"),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ShakeListScreen())),
             ),
             Text(
               'You have pushed the button this many times:',
