@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/left_menu.dart';
 import 'package:flutter_app/deprem_hazirlik.dart';
-import 'package:flutter_app/screens/deprem_liste.dart';
-import 'package:flutter_app/services/deprem_verileri.dart';
-
-import 'models/shake.dart';
+import 'package:flutter_app/toplanma_alanlari.dart';
+import 'screens/deprem_liste.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,11 +15,11 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         fontFamily: 'Ubuntu',
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(
-        title: "Program",
+        title: "Deprem Acil Yardım",
       ),
     );
   }
@@ -36,48 +35,102 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
+      drawer: MainDrawer(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              child: Text("Deprem hazırlık"),
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DepremHazirlik())),
+            Container(
+              width: double.infinity,
+              height: 210,
+              padding: const EdgeInsets.all(20),
+              child: Center(
+                  child: Column(
+                children: <Widget>[
+                  Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/deprem3.png'),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  )
+                ],
+              )),
             ),
-            ElevatedButton(
-              child: Text("veri safasina git"),
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ShakeListScreen())),
-            ),
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            Container(
+                margin: EdgeInsets.only(bottom: 15),
+                child: FlatButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DepremHazirlik())),
+                  color: Colors.blue,
+                  minWidth: 230,
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Column(
+                    // Replace with a Row for horizontal icon + text
+                    children: <Widget>[
+                      Icon(Icons.info_sharp, color: Colors.white),
+                      Text(
+                        "Acil Durum Rehberi",
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      )
+                    ],
+                  ),
+                )),
+            Container(
+                margin: EdgeInsets.only(bottom: 15),
+                child: FlatButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ShakeListScreen())),
+                  color: Colors.green,
+                  minWidth: 230,
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Column(
+                    // Replace with a Row for horizontal icon + text
+                    children: <Widget>[
+                      Icon(Icons.dashboard, color: Colors.white),
+                      Text(
+                        "Son Depremler",
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      )
+                    ],
+                  ),
+                )),
+            Container(
+                margin: EdgeInsets.only(bottom: 40),
+                child: FlatButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ToplanmaAlanlari())),
+                  color: Colors.orange,
+                  minWidth: 230,
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Column(
+                    // Replace with a Row for horizontal icon + text
+                    children: <Widget>[
+                      Icon(Icons.directions_run, color: Colors.white),
+                      Text(
+                        "Toplanma Alanları",
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      )
+                    ],
+                  ),
+                ))
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }

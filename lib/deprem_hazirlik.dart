@@ -75,7 +75,8 @@ class _DepremHazirlik extends State<DepremHazirlik>
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        fontFamily: 'Ubuntu', // page deafult font type
+        fontFamily: 'Ubuntu',
+        primarySwatch: Colors.blue,
       ),
       home: Scaffold(
         appBar: AppBar(
