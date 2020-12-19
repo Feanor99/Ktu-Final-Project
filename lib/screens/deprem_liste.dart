@@ -63,6 +63,16 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
           _isLoading = false;
         });
       }
+    } else {
+      Navigator.of(context).pop();
+      Fluttertoast.showToast(
+          msg: "Lütfen internet bağlantınızı kontrol edip tekrar deneyiniz.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }
   }
 
