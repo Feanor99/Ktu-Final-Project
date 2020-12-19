@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/left_menu.dart';
-import 'package:flutter_app/deprem_hazirlik.dart';
-import 'package:flutter_app/toplanma_alanlari.dart';
+import 'package:flutter_app/widgets/left_menu.dart';
+import 'package:flutter_app/screens/deprem_hazirlik.dart';
+import 'package:flutter_app/screens/toplanma_alanlari.dart';
 import 'screens/deprem_liste.dart';
 
 void main() {
@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Ubuntu',
         primarySwatch: Colors.red,
