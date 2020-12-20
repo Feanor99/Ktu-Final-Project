@@ -88,6 +88,15 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
     super.dispose();
   }
 
+  colorForDiffSizes(double mag) {
+    if (mag < 5)
+      return Colors.green;
+    else if (mag < 6)
+      return Colors.yellow;
+    else
+      return Colors.red;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -207,7 +216,8 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,
-                                          color: Colors.red),
+                                          color: colorForDiffSizes(double.parse(
+                                              shakeList[index].size))),
                                     ),
                                     Text(
                                       shakeList[index].time.substring(0, 5),
