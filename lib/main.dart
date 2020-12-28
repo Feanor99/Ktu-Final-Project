@@ -1,10 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/services/authservice.dart';
+import 'package:flutter_app/users/list_users.dart';
+import 'package:flutter_app/users/sign_up.dart';
 import 'package:flutter_app/widgets/left_menu.dart';
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
 import 'package:flutter_app/screens/toplanma_alanlari.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/deprem_liste.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -19,9 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(
-        title: "Deprem Acil Yardım",
-      ),
+      home: AuthService().handleAuth(),
     );
   }
 }
@@ -36,9 +42,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  checkUser() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    bool check = pref.getBool("first") ?? false;
+    if (!check) {
+      String name = pref.getString("name") ?? "";
+      String surname = pref.getString("surname") ?? "";
+      String phone = pref.getString("phone") ?? "";
+      SignUp().addUser(name, surname, phone);
+      pref.setBool("first", true);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -129,7 +154,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     ],
                   ),
-                ))
+                )),
+            Container(
+                child: FlatButton(
+              onPressed: () => ListUsers().printThemAll(),
+              color: Colors.orange,
+              minWidth: 230,
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Column(
+                // Replace with a Row for horizontal icon + text
+                children: <Widget>[
+                  Text(
+                    "Print users to console",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  )
+                ],
+              ),
+            ))
           ],
         ),
       ),

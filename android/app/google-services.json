@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "400248555058",
+    "project_id": "muh-tas",
+    "storage_bucket": "muh-tas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400248555058:android:75a21930323e71a3115e2b",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "400248555058-0e0v3tj0th1a0h4mhi67c4dknv22t0fb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBF91KyOB2r48T8Tea0hEjLMFBjsYkMq-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "400248555058-0e0v3tj0th1a0h4mhi67c4dknv22t0fb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
