@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/main.dart';
-import 'package:flutter_app/users/login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_app/screens/login.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthService {
   //Handles Auth
   handleAuth() {
     return StreamBuilder(
-        stream: FirebaseAuth.instance.onAuthStateChanged,
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
             return MyHomePage(
@@ -31,12 +31,17 @@ class AuthService {
   }
 
   signInWithOTP(smsCode, verId, context, name, surname, phoneNo) async {
-    AuthCredential authCreds = PhoneAuthProvider.getCredential(
-        verificationId: verId, smsCode: smsCode);
-    signIn(authCreds);
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setString("name", name);
-    pref.setString("surname", surname);
-    pref.setString("phone", phoneNo);
+    AuthCredential authCreds =
+        PhoneAuthProvider.credential(verificationId: verId, smsCode: smsCode);
+    if (authCreds.token == null) {
+      Fluttertoast.showToast(
+          msg: "Kod doğrulanamadı.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 15.0);
+    } else
+      signIn(authCreds);
   }
 }

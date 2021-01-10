@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/authservice.dart';
-import 'package:flutter_app/users/list_users.dart';
+
+import 'package:flutter_app/screens/login.dart';
 import 'package:flutter_app/users/sign_up.dart';
 import 'package:flutter_app/widgets/left_menu.dart';
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
 import 'package:flutter_app/screens/toplanma_alanlari.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/deprem_liste.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,15 +45,50 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  dynamic data;
+  //check if phone already has an account
+  Future<dynamic> getData() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    String phone = pref.getString("phone") ?? "";
+    if (phone == "") return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where(FieldPath.documentId, isEqualTo: phone)
+        .get()
+        .then((event) {
+      if (event.docs.isNotEmpty) {
+        Fluttertoast.showToast(
+            msg: "Telefonunuz kayıtlı, tekrar hoşgeldiniz.",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black54,
+            timeInSecForIosWeb: 1,
+            textColor: Colors.white,
+            fontSize: 15.0);
+      } else {
+        String name = pref.getString("name") ?? "";
+        String surname = pref.getString("surname") ?? "";
+        SignUp().addUser(name, surname, phone);
+        pref.setBool("first", true);
+        Fluttertoast.showToast(
+            msg: "Kaydınız tamamlandı. Hoşgeldiniz.",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black54,
+            timeInSecForIosWeb: 1,
+            textColor: Colors.white,
+            fontSize: 15.0);
+      }
+    }).catchError((e) => print("error fetching data: $e"));
+  }
+
   checkUser() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     bool check = pref.getBool("first") ?? false;
     if (!check) {
-      String name = pref.getString("name") ?? "";
-      String surname = pref.getString("surname") ?? "";
-      String phone = pref.getString("phone") ?? "";
-      SignUp().addUser(name, surname, phone);
-      pref.setBool("first", true);
+      getData();
     }
   }
 
@@ -155,22 +193,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 )),
-            Container(
-                child: FlatButton(
-              onPressed: () => ListUsers().printThemAll(),
-              color: Colors.orange,
-              minWidth: 230,
-              padding: EdgeInsets.only(top: 10, bottom: 10),
-              child: Column(
-                // Replace with a Row for horizontal icon + text
-                children: <Widget>[
-                  Text(
-                    "Print users to console",
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  )
-                ],
-              ),
-            ))
           ],
         ),
       ),

@@ -1,13 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUp {
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  Future<void> addUser(String name, String surname, String phone) async {
+    final user = await FirebaseAuth.instance.currentUser;
+    final idToken = await user.getIdToken();
+    final id = user.uid;
 
-  Future<void> addUser(String name, String surname, String phone) {
     // Call the user's CollectionReference to add a new user
-    return users
-        .add({'name': name, 'surname': surname, 'phone': phone})
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+    return FirebaseFirestore.instance.collection("users").doc(phone).set({
+      "name": name,
+      "surname": surname,
+      "id": id,
+      "phone": phone,
+      "idToken": idToken
+    }).then((value) {
+      print('user added');
+    });
   }
 }
