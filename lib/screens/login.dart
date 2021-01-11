@@ -212,6 +212,10 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          CircularProgressIndicator(),
+          SizedBox(
+            height: 5,
+          ),
           Text(
             'Yönlendiriliyor...',
             style: TextStyle(fontSize: 20.0),
@@ -223,15 +227,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> verifyPhone(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) {
-      AuthService().signIn(authResult);
-      Navigator.pop(context);
+      AuthService().signIn(authResult, context);
+      //  Navigator.pop(context);
     };
 
     final PhoneVerificationFailed verificationfailed = (var authException) {
       print('${authException.message}');
       Fluttertoast.showToast(
-          msg: "İşlem tamamlanırken sorun oluştu.",
-          toastLength: Toast.LENGTH_LONG,
+          msg: "Kod gönderilemedi",
+          toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.TOP,
           timeInSecForIosWeb: 1,
           textColor: Colors.white,

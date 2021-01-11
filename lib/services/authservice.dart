@@ -26,22 +26,26 @@ class AuthService {
   }
 
   //SignIn
-  signIn(AuthCredential authCreds) {
-    FirebaseAuth.instance.signInWithCredential(authCreds);
+  signIn(AuthCredential authCreds, context) async {
+    try {
+      await FirebaseAuth.instance.signInWithCredential(authCreds);
+      Navigator.pop(context);
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Kod Doğrulanamadı.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          backgroundColor: Colors.black54,
+          fontSize: 15.0);
+    }
   }
 
   signInWithOTP(smsCode, verId, context, name, surname, phoneNo) async {
     AuthCredential authCreds =
         PhoneAuthProvider.credential(verificationId: verId, smsCode: smsCode);
-    if (authCreds.token == null) {
-      Fluttertoast.showToast(
-          msg: "Kod doğrulanamadı.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 1,
-          textColor: Colors.white,
-          fontSize: 15.0);
-    } else
-      signIn(authCreds);
+
+    return signIn(authCreds, context);
   }
 }

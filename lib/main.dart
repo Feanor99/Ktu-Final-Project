@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String name = pref.getString("name") ?? "";
         String surname = pref.getString("surname") ?? "";
         SignUp().addUser(name, surname, phone);
-        pref.setBool("first", true);
+
         Fluttertoast.showToast(
             msg: "Kaydınız tamamlandı. Hoşgeldiniz.",
             toastLength: Toast.LENGTH_LONG,
@@ -88,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     bool check = pref.getBool("first") ?? false;
     if (!check) {
+      pref.setBool("first", true);
       getData();
     }
   }
