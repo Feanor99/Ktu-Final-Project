@@ -38,9 +38,7 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
-                width: double.infinity,
-                height: 550,
+              Expanded(
                 child: StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('usersList')
@@ -122,7 +120,7 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
                     }),
               ),
               Container(
-                  margin: EdgeInsets.only(bottom: 0),
+                  margin: EdgeInsets.only(bottom: 5),
                   height: 60,
                   width: 250,
                   child: new RaisedButton.icon(

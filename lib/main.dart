@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/services/authservice.dart';
 
 import 'package:flutter_app/screens/login.dart';
-import 'package:flutter_app/users/sign_up.dart';
+import 'package:flutter_app/services/firestore_service.dart';
 import 'package:flutter_app/widgets/left_menu.dart';
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
 import 'package:flutter_app/screens/users_list.dart';
@@ -46,6 +50,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   dynamic data;
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+
   //check if phone already has an account
   Future<dynamic> getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -53,10 +59,10 @@ class _MyHomePageState extends State<MyHomePage> {
     String phone = pref.getString("phone") ?? "";
     if (phone == "") return;
 
-    final user = await FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     final id = user.uid;
 
-    await FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection('users')
         .where(FieldPath.documentId, isEqualTo: id)
         .get()
@@ -73,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         String name = pref.getString("name") ?? "";
         String surname = pref.getString("surname") ?? "";
-        SignUp().addUser(name, surname, phone);
+        FirestoreService.addUser(name, surname, phone);
 
         Fluttertoast.showToast(
             msg: "Kaydınız tamamlandı. Hoşgeldiniz.",
@@ -99,6 +105,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage : $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch : $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume : $message");
+      },
+    );
+    if (Platform.isIOS) {
+      firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(
+            sound: true, badge: true, alert: true, provisional: false),
+      );
+    }
+
     checkUser();
   }
 
@@ -111,72 +135,73 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: MainDrawer(),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: 210,
-              padding: const EdgeInsets.all(20),
-              child: Center(
-                  child: Column(
-                children: <Widget>[
-                  Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/deprem3.png'),
-                        fit: BoxFit.fill,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: double.infinity,
+                height: 210,
+                padding: const EdgeInsets.all(20),
+                child: Center(
+                    child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/deprem3.png'),
+                          fit: BoxFit.fill,
+                        ),
                       ),
+                    )
+                  ],
+                )),
+              ),
+              Container(
+                  margin: EdgeInsets.only(bottom: 15),
+                  child: FlatButton(
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DepremHazirlik())),
+                    color: Colors.blue,
+                    minWidth: 230,
+                    padding: EdgeInsets.only(top: 20, bottom: 20),
+                    child: Column(
+                      // Replace with a Row for horizontal icon + text
+                      children: <Widget>[
+                        Icon(Icons.info_sharp, color: Colors.white),
+                        Text(
+                          "Acil Durum Rehberi",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        )
+                      ],
                     ),
-                  )
-                ],
-              )),
-            ),
-            Container(
-                margin: EdgeInsets.only(bottom: 15),
-                child: FlatButton(
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DepremHazirlik())),
-                  color: Colors.blue,
-                  minWidth: 230,
-                  padding: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Column(
-                    // Replace with a Row for horizontal icon + text
-                    children: <Widget>[
-                      Icon(Icons.info_sharp, color: Colors.white),
-                      Text(
-                        "Acil Durum Rehberi",
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      )
-                    ],
-                  ),
-                )),
-            Container(
-                margin: EdgeInsets.only(bottom: 15),
-                child: FlatButton(
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ShakeListScreen())),
-                  color: Colors.green,
-                  minWidth: 230,
-                  padding: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Column(
-                    // Replace with a Row for horizontal icon + text
-                    children: <Widget>[
-                      Icon(Icons.dashboard, color: Colors.white),
-                      Text(
-                        "Son Depremler",
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      )
-                    ],
-                  ),
-                )),
-            Container(
+                  )),
+              Container(
+                  margin: EdgeInsets.only(bottom: 15),
+                  child: FlatButton(
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ShakeListScreen())),
+                    color: Colors.green,
+                    minWidth: 230,
+                    padding: EdgeInsets.only(top: 20, bottom: 20),
+                    child: Column(
+                      // Replace with a Row for horizontal icon + text
+                      children: <Widget>[
+                        Icon(Icons.dashboard, color: Colors.white),
+                        Text(
+                          "Son Depremler",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        )
+                      ],
+                    ),
+                  )),
+              Container(
                 margin: EdgeInsets.only(bottom: 40),
                 child: FlatButton(
                   onPressed: () => Navigator.push(context,
@@ -194,8 +219,30 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     ],
                   ),
-                )),
-          ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 40),
+                child: FlatButton(
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HelpMe())),
+                  color: Colors.orange,
+                  minWidth: 230,
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Column(
+                    // Replace with a Row for horizontal icon + text
+                    children: <Widget>[
+                      Icon(Icons.help, color: Colors.white),
+                      Text(
+                        "Yardim Gonder",
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
