@@ -230,8 +230,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> verifyPhone(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) {
-      AuthService().signIn(authResult, _scaffoldKey.currentContext);
-      if (smsCode == "") Navigator.pop(context);
+      AuthService().autosignIn(authResult);
     };
 
     final PhoneVerificationFailed verificationfailed = (var authException) {

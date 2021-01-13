@@ -27,6 +27,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        'package:flutter_app/main.dart': (BuildContext context) => MyHomePage(),
+      },
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -124,6 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     checkUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.popUntil(
+          context,
+          ModalRoute.withName('/'),
+        ));
   }
 
   @override

@@ -11,6 +11,8 @@ class AuthService {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
+            while (Navigator.canPop(context)) Navigator.pop(context);
+
             return MyHomePage(
               title: "Deprem Acil Yardım",
             );
@@ -28,9 +30,7 @@ class AuthService {
   //SignIn
   signIn(AuthCredential authCreds, context) async {
     try {
-      await FirebaseAuth.instance.signInWithCredential(authCreds).then((_) {
-        Navigator.pop(context);
-      });
+      await FirebaseAuth.instance.signInWithCredential(authCreds);
     } catch (e) {
       print("helo");
       print(e);
@@ -43,6 +43,10 @@ class AuthService {
           backgroundColor: Colors.black54,
           fontSize: 15.0);
     }
+  }
+
+  autosignIn(AuthCredential authCreds) async {
+    await FirebaseAuth.instance.signInWithCredential(authCreds);
   }
 
   signInWithOTP(smsCode, verId, context, name, surname, phoneNo) async {
