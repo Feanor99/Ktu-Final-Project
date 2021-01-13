@@ -8,10 +8,9 @@ class SignUp {
     final id = user.uid;
 
     // Call the user's CollectionReference to add a new user
-    return FirebaseFirestore.instance.collection("users").doc(phone).set({
+    return FirebaseFirestore.instance.collection("users").doc(id).set({
       "name": name,
       "surname": surname,
-      "id": id,
       "phone": phone,
       "idToken": idToken
     }).then((value) {

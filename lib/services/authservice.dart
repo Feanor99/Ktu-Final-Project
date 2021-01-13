@@ -28,9 +28,12 @@ class AuthService {
   //SignIn
   signIn(AuthCredential authCreds, context) async {
     try {
-      await FirebaseAuth.instance.signInWithCredential(authCreds);
-      Navigator.pop(context);
+      await FirebaseAuth.instance.signInWithCredential(authCreds).then((_) {
+        Navigator.pop(context);
+      });
     } catch (e) {
+      print("helo");
+      print(e);
       Fluttertoast.showToast(
           msg: "Kod Doğrulanamadı.",
           toastLength: Toast.LENGTH_SHORT,
@@ -46,6 +49,6 @@ class AuthService {
     AuthCredential authCreds =
         PhoneAuthProvider.credential(verificationId: verId, smsCode: smsCode);
 
-    return signIn(authCreds, context);
+    signIn(authCreds, context);
   }
 }

@@ -53,9 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
     String phone = pref.getString("phone") ?? "";
     if (phone == "") return;
 
+    final user = await FirebaseAuth.instance.currentUser;
+    final id = user.uid;
+
     await FirebaseFirestore.instance
         .collection('users')
-        .where(FieldPath.documentId, isEqualTo: phone)
+        .where(FieldPath.documentId, isEqualTo: id)
         .get()
         .then((event) {
       if (event.docs.isNotEmpty) {

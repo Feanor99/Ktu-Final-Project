@@ -18,6 +18,8 @@ class _LoginPageState extends State<LoginPage> {
   final formKey = new GlobalKey<FormState>();
   final formKey2 = new GlobalKey<FormState>();
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   String phoneNo, verificationId, smsCode, name, surname;
 
   bool codeSent = false, loading = false;
@@ -120,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                                 pref.setString("phone", phoneNo);
                                 verifyPhone(phoneNo);
                                 Navigator.pop(context);
-                                showSmsDialog();
+                                //showSmsDialog();
                               }
                             }
                           })),
@@ -177,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                               AuthService().signInWithOTP(
                                   smsCode,
                                   verificationId,
-                                  context,
+                                  _scaffoldKey.currentContext,
                                   name,
                                   surname,
                                   phoneNo);
@@ -208,27 +210,28 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(
-            height: 5,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Yönlendiriliyor...',
+                style: TextStyle(fontSize: 20.0),
+              )
+            ],
           ),
-          Text(
-            'Yönlendiriliyor...',
-            style: TextStyle(fontSize: 20.0),
-          )
-        ],
-      ),
-    ));
+        ));
   }
 
   Future<void> verifyPhone(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) {
-      AuthService().signIn(authResult, context);
-      //  Navigator.pop(context);
+      AuthService().signIn(authResult, _scaffoldKey.currentContext);
+      if (smsCode == "") Navigator.pop(context);
     };
 
     final PhoneVerificationFailed verificationfailed = (var authException) {
@@ -241,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
           textColor: Colors.white,
           backgroundColor: Colors.black54,
           fontSize: 15.0);
-      Navigator.pop(context);
+      // Navigator.pop(context);
       showAuthDialog();
     };
 
@@ -250,6 +253,7 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         this.codeSent = true;
       });
+      showSmsDialog();
     };
 
     final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
