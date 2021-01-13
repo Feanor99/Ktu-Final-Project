@@ -120,7 +120,7 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
                     }),
               ),
               Container(
-                  margin: EdgeInsets.only(bottom: 5),
+                  margin: EdgeInsets.only(bottom: 20),
                   height: 60,
                   width: 250,
                   child: new RaisedButton.icon(

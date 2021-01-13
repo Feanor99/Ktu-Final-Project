@@ -22,7 +22,7 @@ class _ToplanmaAlanlari extends State<ToplanmaAlanlari>
     return MaterialApp(
       theme: ThemeData(
         fontFamily: 'Ubuntu',
-        primarySwatch: Colors.orange, // page deafult font type
+        primarySwatch: Colors.blue, // page deafult font type
       ),
       home: Scaffold(
         appBar: AppBar(

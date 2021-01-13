@@ -25,7 +25,7 @@ class _ContactList extends State<ContactList> {
     final isExist = await doesPhoneAlreadyExist(phoneNumber);
     if (isExist)
       return Fluttertoast.showToast(
-          msg: "Bu kisiyi zaten eklediniz.",
+          msg: "Bu kişiyi zaten eklediniz.",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.black54,
@@ -58,7 +58,7 @@ class _ContactList extends State<ContactList> {
     String uid = auth.currentUser.uid.toString();
     final QuerySnapshot result = await FirebaseFirestore.instance
         .collection('usersList')
-        .where('phoneNumber', isEqualTo: phoneNumber)
+        .where('phoneNumber', isEqualTo: convertToValidNumber(phoneNumber))
         .where('uid', isEqualTo: uid)
         .limit(1)
         .get();
@@ -142,168 +142,190 @@ class _ContactList extends State<ContactList> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Kişilerim'),
-      ),
-      body: Container(
-        padding: EdgeInsets.only(top: 10, bottom: 25),
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(20),
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                    labelText: 'Ara',
-                    border: new OutlineInputBorder(
-                        borderSide: new BorderSide(
-                            color: Theme.of(context).primaryColor)),
-                    prefixIcon: Icon(Icons.search,
-                        color: Theme.of(context).primaryColor)),
-              ),
+    return MaterialApp(
+        theme: ThemeData(
+          fontFamily: 'Ubuntu',
+          primarySwatch: Colors.blue, // page deafult font type
+        ),
+        home: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
             ),
-            Expanded(
-              child: _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: isSearching == true
-                          ? contactsFiltered.length
-                          : contacts.length,
-                      itemBuilder: (context, index) {
-                        Contact contact = isSearching == true
-                            ? contactsFiltered[index]
-                            : contacts[index];
-
-                        var baseColor =
-                            contactsColorMap[contact.displayName] as dynamic;
-
-                        Color color1 = baseColor[800];
-                        Color color2 = baseColor[400];
-                        return ListTile(
-                            title: Text(contact.displayName),
-                            subtitle: Text(contact.phones.length > 0
-                                ? contact.phones.elementAt(0).value
-                                : ''),
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text(contact.displayName),
-                                    content: Text(contact.phones.length > 0
-                                        ? contact.phones.elementAt(0).value
-                                        : ''),
-                                    actions: <Widget>[
-                                      FlatButton(
-                                        child: Text("Kişilerime Kaydet"),
-                                        onPressed: () async {
-                                          if (contact.phones.length > 0) {
-                                            await addContact(
-                                                contact.phones
-                                                    .elementAt(0)
-                                                    .value,
-                                                contact.displayName);
-                                            Fluttertoast.showToast(
-                                                msg: "Başarıyla Eklendi",
-                                                toastLength: Toast.LENGTH_LONG,
-                                                gravity: ToastGravity.BOTTOM,
-                                                backgroundColor: Colors.black54,
-                                                timeInSecForIosWeb: 1,
-                                                textColor: Colors.white,
-                                                fontSize: 15.0);
-                                          } else {
-                                            Fluttertoast.showToast(
-                                                msg: "Eklenemedi",
-                                                toastLength: Toast.LENGTH_LONG,
-                                                gravity: ToastGravity.BOTTOM,
-                                                backgroundColor: Colors.black54,
-                                                timeInSecForIosWeb: 1,
-                                                textColor: Colors.white,
-                                                fontSize: 15.0);
-                                          }
-                                          Navigator.pop(context);
-                                        },
-                                      )
-                                    ],
+            title: Text('Yeni Kişi Ekle'),
+          ),
+          body: Container(
+            padding: EdgeInsets.only(top: 10, bottom: 25),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(20),
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                        labelText: 'Ara',
+                        border: new OutlineInputBorder(
+                            borderSide: new BorderSide(color: Colors.blue)),
+                        prefixIcon: Icon(Icons.search, color: Colors.blue)),
+                  ),
+                ),
+                Expanded(
+                  child: _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: isSearching == true
+                              ? contactsFiltered.length
+                              : contacts.length,
+                          itemBuilder: (context, index) {
+                            Contact contact = isSearching == true
+                                ? contactsFiltered[index]
+                                : contacts[index];
+                            return ListTile(
+                                title: Text(contact.displayName),
+                                subtitle: Text(contact.phones.length > 0
+                                    ? contact.phones.elementAt(0).value
+                                    : ''),
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(contact.displayName),
+                                        content: Text(contact.phones.length > 0
+                                            ? contact.phones.elementAt(0).value
+                                            : ''),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: Text("Kişilerime Kaydet"),
+                                            onPressed: () async {
+                                              if (contact.phones.length > 0) {
+                                                await addContact(
+                                                    contact.phones
+                                                        .elementAt(0)
+                                                        .value,
+                                                    contact.displayName);
+                                                Fluttertoast.showToast(
+                                                    msg: "Başarıyla Eklendi",
+                                                    toastLength:
+                                                        Toast.LENGTH_LONG,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    backgroundColor:
+                                                        Colors.black54,
+                                                    timeInSecForIosWeb: 1,
+                                                    textColor: Colors.white,
+                                                    fontSize: 15.0);
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        "Telefon Numarası Gereklidir",
+                                                    toastLength:
+                                                        Toast.LENGTH_LONG,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    backgroundColor:
+                                                        Colors.black54,
+                                                    timeInSecForIosWeb: 1,
+                                                    textColor: Colors.white,
+                                                    fontSize: 15.0);
+                                              }
+                                              Navigator.pop(context);
+                                            },
+                                          )
+                                        ],
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                            trailing: new Container(
-                                child: new RaisedButton.icon(
-                              color: Colors.blue,
-                              textColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(contact.displayName),
-                                      content: Text(contact.phones.length > 0
-                                          ? contact.phones.elementAt(0).value
-                                          : ''),
-                                      actions: <Widget>[
-                                        FlatButton(
-                                          child: Text("Kişilerime Kaydet"),
-                                          onPressed: () {
-                                            addContact(
-                                                contact.phones.length > 0
-                                                    ? contact.phones
-                                                        .elementAt(0)
-                                                        .value
-                                                    : '',
-                                                contact.displayName);
-                                            Navigator.pop(context);
-                                            Fluttertoast.showToast(
-                                                msg: "Başarıyla Eklendi",
-                                                toastLength: Toast.LENGTH_LONG,
-                                                gravity: ToastGravity.BOTTOM,
-                                                backgroundColor: Colors.black54,
-                                                timeInSecForIosWeb: 1,
-                                                textColor: Colors.white,
-                                                fontSize: 15.0);
-                                          },
-                                        )
-                                      ],
+                                trailing: new Container(
+                                    child: new RaisedButton.icon(
+                                  color: Colors.blue,
+                                  textColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(contact.displayName),
+                                          content: Text(
+                                              contact.phones.length > 0
+                                                  ? contact.phones
+                                                      .elementAt(0)
+                                                      .value
+                                                  : ''),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              child: Text("Kişilerime Kaydet"),
+                                              onPressed: () async {
+                                                if (contact.phones.length > 0) {
+                                                  await addContact(
+                                                      contact.phones
+                                                          .elementAt(0)
+                                                          .value,
+                                                      contact.displayName);
+                                                  Fluttertoast.showToast(
+                                                      msg: "Başarıyla Eklendi",
+                                                      toastLength:
+                                                          Toast.LENGTH_LONG,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      backgroundColor:
+                                                          Colors.black54,
+                                                      timeInSecForIosWeb: 1,
+                                                      textColor: Colors.white,
+                                                      fontSize: 15.0);
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          "Telefon Numarası Gereklidir",
+                                                      toastLength:
+                                                          Toast.LENGTH_LONG,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      backgroundColor:
+                                                          Colors.black54,
+                                                      timeInSecForIosWeb: 1,
+                                                      textColor: Colors.white,
+                                                      fontSize: 15.0);
+                                                }
+                                                Navigator.pop(context);
+                                              },
+                                            )
+                                          ],
+                                        );
+                                      },
                                     );
                                   },
-                                );
-                              },
-                              label: Text(
-                                'Ekle',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              icon: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                              ),
-                            )),
-                            leading: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: LinearGradient(
-                                        colors: [
-                                          color1,
-                                          color2,
-                                        ],
-                                        begin: Alignment.bottomLeft,
-                                        end: Alignment.topRight)),
-                                child: CircleAvatar(
-                                    child: Text(contact.initials(),
-                                        style: TextStyle(color: Colors.white)),
-                                    backgroundColor: Colors.transparent)));
-                      },
-                    ),
+                                  label: Text(
+                                    'Ekle',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  icon: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
+                                )),
+                                leading: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.blue),
+                                    child: CircleAvatar(
+                                        child: Text(contact.initials(),
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        backgroundColor: Colors.transparent)));
+                          },
+                        ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

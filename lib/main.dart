@@ -6,11 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/services/authservice.dart';
-
-import 'package:flutter_app/screens/login.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:flutter_app/widgets/left_menu.dart';
-import 'package:flutter_app/screens/deprem_hazirlik.dart';
 import 'package:flutter_app/screens/users_list.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -172,29 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DepremHazirlik())),
-                    color: Colors.blue,
-                    minWidth: 230,
-                    padding: EdgeInsets.only(top: 20, bottom: 20),
-                    child: Column(
-                      // Replace with a Row for horizontal icon + text
-                      children: <Widget>[
-                        Icon(Icons.info_sharp, color: Colors.white),
-                        Text(
-                          "Acil Durum Rehberi",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        )
-                      ],
-                    ),
-                  )),
-              Container(
-                  margin: EdgeInsets.only(bottom: 15),
-                  child: FlatButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
                             builder: (context) => ShakeListScreen())),
-                    color: Colors.green,
+                    color: Colors.blue,
                     minWidth: 230,
                     padding: EdgeInsets.only(top: 20, bottom: 20),
                     child: Column(
@@ -209,11 +185,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   )),
               Container(
-                margin: EdgeInsets.only(bottom: 40),
+                margin: EdgeInsets.only(bottom: 15),
                 child: FlatButton(
                   onPressed: () => Navigator.push(context,
                       MaterialPageRoute(builder: (context) => UsersList())),
-                  color: Colors.orange,
+                  color: Colors.green,
                   minWidth: 230,
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   child: Column(
@@ -239,9 +215,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     // Replace with a Row for horizontal icon + text
                     children: <Widget>[
-                      Icon(Icons.help, color: Colors.white),
+                      Icon(Icons.warning, color: Colors.white),
                       Text(
-                        "Yardim Gonder",
+                        "Yardım İste",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       )
                     ],

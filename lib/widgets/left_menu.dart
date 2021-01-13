@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
 import 'package:flutter_app/screens/toplanma_alanlari.dart';
-import '../screens/deprem_liste.dart';
 
 class MainDrawer extends StatelessWidget {
   @override
@@ -40,16 +39,6 @@ class MainDrawer extends StatelessWidget {
               )),
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (context) => DepremHazirlik())),
-        )),
-        Card(
-            child: ListTile(
-          leading: Icon(Icons.dashboard),
-          title: Text('Son Depremler',
-              style: TextStyle(
-                fontSize: 16,
-              )),
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ShakeListScreen())),
         )),
         Card(
             child: ListTile(

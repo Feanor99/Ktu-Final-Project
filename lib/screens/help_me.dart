@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/firestore_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class HelpMe extends StatefulWidget {
@@ -37,8 +37,8 @@ class _HelpMeState extends State<HelpMe> {
         body: jsonEncode(
           <String, dynamic>{
             'notification': <String, dynamic>{
-              'body': 'Yardima ihtiyacim var',
-              'title': 'Lutfen bana yardim edin'
+              'body': 'Yardıma ihtiyacım var',
+              'title': 'Lütfen bana yardım edin!'
             },
             'priority': 'high',
             'data': <String, dynamic>{
@@ -66,13 +66,65 @@ class _HelpMeState extends State<HelpMe> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        child: Center(
-          child: ElevatedButton(
-            onPressed: sendAndRetrieveMessage,
-            child: Text("YARDIM"),
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Ubuntu',
+        primarySwatch: Colors.red, // page deafult font type
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text('Yardım İste'),
+        ),
+        body: Container(
+          child: Center(
+            child: RaisedButton.icon(
+              padding:
+                  EdgeInsets.only(left: 30, right: 30, top: 15, bottom: 15),
+              color: Colors.red,
+              textColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Yardım İste'),
+                      content: Text(
+                          'Gönder butonuna bastığınızda kişi listenizdekilere bildirim gönderilecektir, onaylıyor musunuz?'),
+                      actions: <Widget>[
+                        FlatButton(
+                            child: Text("Gönder"),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Fluttertoast.showToast(
+                                  msg: "Yardım Çağrısı Gönderildi",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.BOTTOM,
+                                  backgroundColor: Colors.black54,
+                                  timeInSecForIosWeb: 1,
+                                  textColor: Colors.white,
+                                  fontSize: 15.0);
+                              sendAndRetrieveMessage();
+                            })
+                      ],
+                    );
+                  },
+                );
+              },
+              label: Text(
+                'Yardım Çağrısı Gönder',
+                style: TextStyle(color: Colors.white),
+              ),
+              icon: Icon(
+                Icons.warning,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),

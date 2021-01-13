@@ -90,7 +90,7 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
 
   colorForDiffSizes(double mag) {
     if (mag < 5)
-      return Colors.green;
+      return Colors.blue;
     else if (mag < 6)
       return Colors.yellow;
     else
@@ -99,141 +99,153 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Son Depremler"),
-        backgroundColor: Colors.green,
-      ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-              strokeWidth: 10,
-            ))
-          : Container(
-              margin: EdgeInsets.only(top: 5),
-              child: ListView.builder(
-                  itemCount: shakeList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                        height: 90,
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        margin: EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0, 2),
-                              blurRadius: 2,
-                              spreadRadius: 1,
-                            )
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Flexible(
-                              flex: 2,
-                              fit: FlexFit.tight,
-                              child: Container(
-                                margin: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black,
-                                      blurRadius: 2,
-                                      spreadRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                alignment: Alignment.center,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      months[int.parse(shakeList[index]
-                                              .date
-                                              .split('.')[1]) -
-                                          1],
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                    Text(
-                                      shakeList[index].date.split('.')[2],
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    Text(
-                                      shakeList[index].date.split('.')[0],
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              fit: FlexFit.tight,
-                              flex: 5,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                alignment: Alignment.centerLeft,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      shakeList[index].location,
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text(shakeList[index].city),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 2,
-                              fit: FlexFit.tight,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: Colors.grey))),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text(
-                                      shakeList[index].size,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: colorForDiffSizes(double.parse(
-                                              shakeList[index].size))),
-                                    ),
-                                    Text(
-                                      shakeList[index].time.substring(0, 5),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ));
-                  }),
+    return MaterialApp(
+        theme: ThemeData(
+          fontFamily: 'Ubuntu',
+          primarySwatch: Colors.blue, // page deafult font type
+        ),
+        home: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
             ),
-    );
+            title: Text("Son Depremler"),
+            backgroundColor: Colors.blue,
+          ),
+          body: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Container(
+                  margin: EdgeInsets.only(top: 5),
+                  child: ListView.builder(
+                      itemCount: shakeList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                            height: 90,
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            margin: EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  offset: Offset(0, 2),
+                                  blurRadius: 2,
+                                  spreadRadius: 1,
+                                )
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  flex: 2,
+                                  fit: FlexFit.tight,
+                                  child: Container(
+                                    margin: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black,
+                                          blurRadius: 2,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          months[int.parse(shakeList[index]
+                                                  .date
+                                                  .split('.')[1]) -
+                                              1],
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        Text(
+                                          shakeList[index].date.split('.')[2],
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                        Text(
+                                          shakeList[index].date.split('.')[0],
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  fit: FlexFit.tight,
+                                  flex: 5,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          shakeList[index].location,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(shakeList[index].city),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 2,
+                                  fit: FlexFit.tight,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: Colors.grey))),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                          shakeList[index].size,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: colorForDiffSizes(
+                                                  double.parse(
+                                                      shakeList[index].size))),
+                                        ),
+                                        Text(
+                                          shakeList[index].time.substring(0, 5),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ));
+                      }),
+                ),
+        ));
   }
 }
