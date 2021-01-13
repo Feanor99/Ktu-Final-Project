@@ -7,7 +7,7 @@ import 'package:flutter_app/screens/login.dart';
 import 'package:flutter_app/users/sign_up.dart';
 import 'package:flutter_app/widgets/left_menu.dart';
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
-import 'package:flutter_app/screens/toplanma_alanlari.dart';
+import 'package:flutter_app/screens/users_list.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/deprem_liste.dart';
@@ -176,19 +176,17 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
                 margin: EdgeInsets.only(bottom: 40),
                 child: FlatButton(
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ToplanmaAlanlari())),
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => UsersList())),
                   color: Colors.orange,
                   minWidth: 230,
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   child: Column(
                     // Replace with a Row for horizontal icon + text
                     children: <Widget>[
-                      Icon(Icons.directions_run, color: Colors.white),
+                      Icon(Icons.contacts, color: Colors.white),
                       Text(
-                        "Toplanma Alanları",
+                        "Kişilerim",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       )
                     ],
