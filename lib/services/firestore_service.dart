@@ -32,9 +32,9 @@ class FirestoreService {
     if (docs.length <= 0 || docs == null)
       return null; // REHBERE KIMSEYI EKLEMEMIS
 
-    List<String> TOKENS;
+    List<String> tokens = new List<String>();
 
-    docs.forEach((element) async {
+    for (QueryDocumentSnapshot element in docs) {
       String phoneNumber = element['phoneNumber'];
       final userSnap = await instance
           .collection("users")
@@ -48,12 +48,12 @@ class FirestoreService {
         final anotherUser = userSnap.docs[0].data();
         final notifyToken = anotherUser['notifyToken'];
 
-        if (notifyToken == "" || notifyToken == null) return print("Token YOK");
+        if (notifyToken == "" || notifyToken == null) return null;
 
-        TOKENS.add(notifyToken);
+        tokens.add(notifyToken);
       }
-    });
+    }
 
-    return TOKENS;
+    return tokens;
   }
 }

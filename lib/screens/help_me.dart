@@ -23,11 +23,11 @@ class _HelpMeState extends State<HelpMe> {
     if (user == null) return null;
     final contactTokens =
         await FirestoreService.getNotifyTokensFromUserList(user);
-
     if (contactTokens.length <= 0 || contactTokens == null)
       return null; // TOKEN YOK
 
-    contactTokens.forEach((token) async {
+    contactTokens.forEach((_token) async {
+      print(_token);
       await http.post(
         'https://fcm.googleapis.com/fcm/send',
         headers: <String, String>{
@@ -46,7 +46,7 @@ class _HelpMeState extends State<HelpMe> {
               'id': '1',
               'status': 'done'
             },
-            'to': token,
+            'to': _token,
           },
         ),
       );
