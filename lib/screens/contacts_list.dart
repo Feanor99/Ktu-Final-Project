@@ -23,24 +23,48 @@ class _ContactList extends State<ContactList> {
 
   Future addContact(String phoneNumber, String displayName) async {
     final isExist = await doesPhoneAlreadyExist(phoneNumber);
-    if (isExist)
-      return Fluttertoast.showToast(
+    final isUserExist = await doesUserExist(phoneNumber);
+    if (!isUserExist) {
+      Fluttertoast.showToast(
+          msg: "Telefon numarasına kayıtlı kullanıcı bulunamadı.",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black54,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 15.0);
+      return;
+    }
+    if (isExist) {
+      Fluttertoast.showToast(
           msg: "Bu kişiyi zaten eklediniz.",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.black54,
           timeInSecForIosWeb: 1,
           textColor: Colors.white,
-          fontSize: 15.0); // Uygulamada kayitli degil
+          fontSize: 15.0);
+      return;
+    } // Uygulamada kayitli degil
 
     CollectionReference usersList =
         FirebaseFirestore.instance.collection('usersList');
     FirebaseAuth auth = FirebaseAuth.instance;
     String uid = auth.currentUser.uid.toString();
-    return await usersList.add({
+
+    usersList.add({
       'displayName': displayName,
       'phoneNumber': convertToValidNumber(phoneNumber),
       'uid': uid
+    }).then((_) {
+      Fluttertoast.showToast(
+          msg: "Başarıyla Eklendi",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black54,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 15.0);
     });
   }
 
@@ -60,6 +84,16 @@ class _ContactList extends State<ContactList> {
         .collection('usersList')
         .where('phoneNumber', isEqualTo: convertToValidNumber(phoneNumber))
         .where('uid', isEqualTo: uid)
+        .limit(1)
+        .get();
+    final List<DocumentSnapshot> documents = result.docs;
+    return documents.length == 1;
+  }
+
+  Future<bool> doesUserExist(String phoneNumber) async {
+    final QuerySnapshot result = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phone', isEqualTo: convertToValidNumber(phoneNumber))
         .limit(1)
         .get();
     final List<DocumentSnapshot> documents = result.docs;
@@ -206,17 +240,6 @@ class _ContactList extends State<ContactList> {
                                                         .elementAt(0)
                                                         .value,
                                                     contact.displayName);
-                                                Fluttertoast.showToast(
-                                                    msg: "Başarıyla Eklendi",
-                                                    toastLength:
-                                                        Toast.LENGTH_LONG,
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    backgroundColor:
-                                                        Colors.black54,
-                                                    timeInSecForIosWeb: 1,
-                                                    textColor: Colors.white,
-                                                    fontSize: 15.0);
                                               } else {
                                                 Fluttertoast.showToast(
                                                     msg:
@@ -267,17 +290,6 @@ class _ContactList extends State<ContactList> {
                                                           .elementAt(0)
                                                           .value,
                                                       contact.displayName);
-                                                  Fluttertoast.showToast(
-                                                      msg: "Başarıyla Eklendi",
-                                                      toastLength:
-                                                          Toast.LENGTH_LONG,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      backgroundColor:
-                                                          Colors.black54,
-                                                      timeInSecForIosWeb: 1,
-                                                      textColor: Colors.white,
-                                                      fontSize: 15.0);
                                                 } else {
                                                   Fluttertoast.showToast(
                                                       msg:
