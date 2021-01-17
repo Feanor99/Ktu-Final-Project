@@ -76,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
             timeInSecForIosWeb: 1,
             textColor: Colors.white,
             fontSize: 15.0);
+        FirestoreService.updateUserNotifyId();
       } else {
         String name = pref.getString("name") ?? "";
         String surname = pref.getString("surname") ?? "";

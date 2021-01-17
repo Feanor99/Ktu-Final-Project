@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HelpMe extends StatefulWidget {
   @override
@@ -26,8 +27,9 @@ class _HelpMeState extends State<HelpMe> {
     if (contactTokens.length <= 0 || contactTokens == null)
       return null; // TOKEN YOK
 
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    final name = pref.getString("name") + " " + pref.getString("surname");
     contactTokens.forEach((_token) async {
-      print(_token);
       await http.post(
         'https://fcm.googleapis.com/fcm/send',
         headers: <String, String>{
@@ -38,7 +40,7 @@ class _HelpMeState extends State<HelpMe> {
           <String, dynamic>{
             'notification': <String, dynamic>{
               'body': 'Yardıma ihtiyacım var',
-              'title': 'Lütfen bana yardım edin!'
+              'title': name,
             },
             'priority': 'high',
             'data': <String, dynamic>{

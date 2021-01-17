@@ -19,6 +19,20 @@ class FirestoreService {
     });
   }
 
+  static Future<void> updateUserNotifyId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final notifyToken = await FirebaseMessaging().getToken();
+    final id = user.uid;
+
+    // Call the user's CollectionReference to add a new user
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"notifyToken": notifyToken}).then((value) {
+      print('user added');
+    });
+  }
+
   static Future<List<String>> getNotifyTokensFromUserList(User user) async {
     if (user == null) return null;
     final instance = FirebaseFirestore.instance;
