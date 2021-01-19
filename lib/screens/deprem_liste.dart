@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/shake.dart';
+import 'package:flutter_app/models/earthquake.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,7 +11,7 @@ class ShakeListScreen extends StatefulWidget {
 }
 
 class _ShakeListScreenState extends State<ShakeListScreen> {
-  List<Shake> shakeList = [];
+  List<Earthquake> shakeList = [];
   bool _isLoading = true;
 
   final List<String> months = [
@@ -37,9 +37,9 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
       String htmlToParse = response.body;
 
       dynamic data = json.decode(htmlToParse);
-      List<Shake> temp = [];
+      List<Earthquake> temp = [];
       data.forEach((value) {
-        temp.add(Shake.fromJson(value));
+        temp.add(Earthquake.fromJson(value));
       });
 
       if (temp == null) {
