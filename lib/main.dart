@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/message.dart';
 import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/services/authservice.dart';
 import 'package:flutter_app/services/firestore_service.dart';
@@ -125,10 +126,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     checkUser();
-    WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.popUntil(
+    /*  WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.popUntil(
           context,
           ModalRoute.withName('/'),
-        ));
+        ));*/ //this code might be useless but dont delete
+    Message message = new Message(
+        "merhaba nasılsınız acaba aaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccccccccc");
+    message.encryptAndSendMessage();
+    print("---------");
+    message.decryptRecivedMessage();
   }
 
   @override
