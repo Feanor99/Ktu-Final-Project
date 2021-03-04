@@ -8,6 +8,7 @@ import 'package:flutter_app/models/message.dart';
 import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/services/authservice.dart';
 import 'package:flutter_app/services/firestore_service.dart';
+import 'package:flutter_app/services/get_location.dart';
 import 'package:flutter_app/widgets/left_menu.dart';
 import 'package:flutter_app/screens/users_list.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -54,8 +55,12 @@ class _MyHomePageState extends State<MyHomePage> {
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
   //check if phone already has an account
-  Future<dynamic> getData() async {
+  Future<dynamic> firestoreUserData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
+
+    var location = await GetLocation.checkPermissionThenGetLocation();
+    String userLocation =
+        location.latitude.toString() + ", " + location.longitude.toString();
 
     String phone = pref.getString("phone") ?? "";
     if (phone == "") return;
@@ -77,11 +82,12 @@ class _MyHomePageState extends State<MyHomePage> {
             timeInSecForIosWeb: 1,
             textColor: Colors.white,
             fontSize: 15.0);
-        FirestoreService.updateUserNotifyId();
+        FirestoreService.updateUserNotifyIdAndLocation(userLocation);
       } else {
         String name = pref.getString("name") ?? "";
         String surname = pref.getString("surname") ?? "";
-        FirestoreService.addUser(name, surname, phone);
+
+        FirestoreService.addUser(name, surname, phone, userLocation);
 
         Fluttertoast.showToast(
             msg: "Kaydınız tamamlandı. Hoşgeldiniz.",
@@ -100,13 +106,14 @@ class _MyHomePageState extends State<MyHomePage> {
     bool check = pref.getBool("first") ?? false;
     if (!check) {
       pref.setBool("first", true);
-      getData();
+      firestoreUserData();
     }
   }
 
   @override
   void initState() {
     super.initState();
+
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage : $message");

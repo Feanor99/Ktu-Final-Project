@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class FirestoreService {
-  static Future<void> addUser(String name, String surname, String phone) async {
+  static Future<void> addUser(
+      String name, String surname, String phone, String location) async {
     final user = FirebaseAuth.instance.currentUser;
     final notifyToken = await FirebaseMessaging().getToken();
     final id = user.uid;
@@ -13,23 +14,35 @@ class FirestoreService {
       "name": name,
       "surname": surname,
       "phone": phone,
-      "notifyToken": notifyToken
+      "notifyToken": notifyToken,
+      "firstLocaion": location
     }).then((value) {
       print('user added');
     });
   }
 
-  static Future<void> updateUserNotifyId() async {
+  static Future<void> updateUserNotifyIdAndLocation(String location) async {
     final user = FirebaseAuth.instance.currentUser;
     final notifyToken = await FirebaseMessaging().getToken();
+    final id = user.uid;
+
+    // Call the user's CollectionReference to add a new user
+    return FirebaseFirestore.instance.collection("users").doc(id).update(
+        {"notifyToken": notifyToken, "firstLocaion": location}).then((value) {
+      print('user updated');
+    });
+  }
+
+  static Future<void> updateLastLocation(String location) async {
+    final user = FirebaseAuth.instance.currentUser;
     final id = user.uid;
 
     // Call the user's CollectionReference to add a new user
     return FirebaseFirestore.instance
         .collection("users")
         .doc(id)
-        .update({"notifyToken": notifyToken}).then((value) {
-      print('user added');
+        .update({"lastLocation": location}).then((value) {
+      print('location updated');
     });
   }
 

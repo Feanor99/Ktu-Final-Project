@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/firestore_service.dart';
+import 'package:flutter_app/services/get_location.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,18 @@ class _HelpMeState extends State<HelpMe> {
   final String serverToken =
       'AAAAXTCsRjI:APA91bEVJujo9YTgZgB1KwgJJBYjLavDx857efILIh7mkJCw_XZeMu1Qu-gF5tCSwtoshyZTJoo913uQjHcz7DnIovDytqTFPHm7pgmuuveTG_Yye_ngxVMWQ2eW3f8d1UQnLBZXBOCU';
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+
+  void initState() {
+    super.initState();
+    updateLocation();
+  }
+
+  updateLocation() async {
+    var location = await GetLocation.checkPermissionThenGetLocation();
+    String userLocation =
+        location.latitude.toString() + ", " + location.longitude.toString();
+    FirestoreService.updateLastLocation(userLocation);
+  }
 
   Future<Map<String, dynamic>> sendAndRetrieveMessage() async {
     final user = FirebaseAuth.instance.currentUser;
