@@ -64,4 +64,5 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation "androidx.browser:browser:1.2.0"
 }
