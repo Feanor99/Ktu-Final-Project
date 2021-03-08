@@ -24,9 +24,8 @@ class _LoginPageState extends State<LoginPage> {
 
   bool codeSent = false, loading = false;
 
-  showAuthDialog() {
-    //context null geliyor bazen
-    if (context == null) return;
+  showAuthDialog() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
     AwesomeDialog(
       context: context,
       dismissOnBackKeyPress: false,
@@ -115,14 +114,11 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () async {
                             if (!codeSent) {
                               if (formKey.currentState.validate()) {
-                                SharedPreferences pref =
-                                    await SharedPreferences.getInstance();
-                                pref.setString("name", name);
-                                pref.setString("surname", surname);
-                                pref.setString("phone", phoneNo);
+                                await pref.setString("name", name);
+                                await pref.setString("surname", surname);
+                                await pref.setString("phone", phoneNo);
                                 verifyPhone(phoneNo);
                                 Navigator.pop(context);
-                                //showSmsDialog();
                               }
                             }
                           })),
@@ -203,7 +199,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => showAuthDialog());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (this.mounted) showAuthDialog();
+    });
+
     super.initState();
   }
 

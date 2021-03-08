@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/message.dart';
 import 'package:flutter_app/screens/help_me.dart';
+import 'package:flutter_app/screens/notification_location.dart';
 import 'package:flutter_app/services/authservice.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:flutter_app/services/get_location.dart';
@@ -15,6 +16,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/deprem_liste.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +39,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: AuthService().handleAuth(),
+      //home: NotificationLocation(),
     );
   }
 }
@@ -52,13 +55,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   dynamic data;
-  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
   //check if phone already has an account
   Future<dynamic> firestoreUserData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
     var location = await GetLocation.checkPermissionThenGetLocation();
+
     String userLocation =
         location.latitude.toString() + ", " + location.longitude.toString();
 
@@ -110,11 +114,30 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  checkNotificationData() async {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      if (message != null) {
+        Fluttertoast.showToast(
+            msg: message.toString(),
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black54,
+            timeInSecForIosWeb: 1,
+            textColor: Colors.white,
+            fontSize: 15.0);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
-    firebaseMessaging.configure(
+    checkNotificationData();
+
+    /* firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage : $message");
       },
@@ -130,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
         const IosNotificationSettings(
             sound: true, badge: true, alert: true, provisional: false),
       );
-    }
+    }*/ //DEPRECATED
 
     checkUser();
     /*  WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.popUntil(

@@ -31,7 +31,8 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
   ];
 
   getShakeDatas() async {
-    var response = await http.get("https://turkiyedepremapi.herokuapp.com/api");
+    var response =
+        await http.get(Uri.parse("https://turkiyedepremapi.herokuapp.com/api"));
     //If the http request is successful the statusCode will be 200
     if (response.statusCode == 200) {
       String htmlToParse = response.body;

@@ -6,7 +6,7 @@ class FirestoreService {
   static Future<void> addUser(
       String name, String surname, String phone, String location) async {
     final user = FirebaseAuth.instance.currentUser;
-    final notifyToken = await FirebaseMessaging().getToken();
+    final notifyToken = await FirebaseMessaging.instance.getToken();
     final id = user.uid;
 
     // Call the user's CollectionReference to add a new user
@@ -23,7 +23,7 @@ class FirestoreService {
 
   static Future<void> updateUserNotifyIdAndLocation(String location) async {
     final user = FirebaseAuth.instance.currentUser;
-    final notifyToken = await FirebaseMessaging().getToken();
+    final notifyToken = await FirebaseMessaging.instance.getToken();
     final id = user.uid;
 
     // Call the user's CollectionReference to add a new user
@@ -69,8 +69,6 @@ class FirestoreService {
           .limit(1)
           .get();
 
-      print("*******************************************************");
-      print(userSnap.docs);
       if (userSnap.docs.length > 0) {
         final anotherUser = userSnap.docs[0].data();
         final notifyToken = anotherUser['notifyToken'];

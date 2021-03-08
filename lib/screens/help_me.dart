@@ -18,7 +18,7 @@ class HelpMe extends StatefulWidget {
 class _HelpMeState extends State<HelpMe> {
   final String serverToken =
       'AAAAXTCsRjI:APA91bEVJujo9YTgZgB1KwgJJBYjLavDx857efILIh7mkJCw_XZeMu1Qu-gF5tCSwtoshyZTJoo913uQjHcz7DnIovDytqTFPHm7pgmuuveTG_Yye_ngxVMWQ2eW3f8d1UQnLBZXBOCU';
-  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
   void initState() {
     super.initState();
@@ -41,10 +41,14 @@ class _HelpMeState extends State<HelpMe> {
       return null; // TOKEN YOK
 
     SharedPreferences pref = await SharedPreferences.getInstance();
-    final name = pref.getString("name") + " " + pref.getString("surname");
+    var buffer = new StringBuffer();
+    buffer.write(pref.getString("name"));
+    buffer.write(" ");
+    buffer.write(pref.getString("surname"));
+    final name = buffer.toString();
     contactTokens.forEach((_token) async {
       await http.post(
-        'https://fcm.googleapis.com/fcm/send',
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'key=$serverToken',
@@ -70,11 +74,11 @@ class _HelpMeState extends State<HelpMe> {
     final Completer<Map<String, dynamic>> completer =
         Completer<Map<String, dynamic>>();
 
-    firebaseMessaging.configure(
+    /*firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         completer.complete(message);
       },
-    );
+    );*/ // DEPRECATED
 
     return completer.future;
   }
