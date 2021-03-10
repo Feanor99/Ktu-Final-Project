@@ -119,14 +119,16 @@ class _MyHomePageState extends State<MyHomePage> {
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        Fluttertoast.showToast(
-            msg: message.toString(),
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.black54,
-            timeInSecForIosWeb: 1,
-            textColor: Colors.white,
-            fontSize: 15.0);
+        String location = message.data['status'];
+
+        NotificationLocation.latitude =
+            location.substring(0, location.indexOf(' '));
+
+        NotificationLocation.longitude =
+            location.substring(location.indexOf(' ') + 1);
+
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => NotificationLocation()));
       }
     });
   }
@@ -135,7 +137,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    checkNotificationData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (this.mounted) checkNotificationData();
+    });
 
     /* firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
@@ -156,12 +160,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }*/ //DEPRECATED
 
     checkUser();
-    /*  WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.popUntil(
-          context,
-          ModalRoute.withName('/'),
-        ));*/ //this code might be useless but dont delete
-    Message message = new Message(
-        "merhaba nasılsınız acaba aaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccccccccc");
+
+    Message message = new Message("merhaba nasılsınız acaba");
     message.encryptAndSendMessage();
     print("---------");
     message.decryptRecivedMessage();

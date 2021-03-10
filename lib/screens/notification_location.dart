@@ -14,17 +14,21 @@ class NotificationLocation extends StatefulWidget {
 class _NotificationLocation extends State<NotificationLocation> {
   Completer<GoogleMapController> _controller = Completer();
 
+  Set<Marker> _createMarker() {
+    return <Marker>[
+      Marker(
+          markerId: MarkerId("home"),
+          position: LatLng(double.parse(NotificationLocation.latitude),
+              double.parse(NotificationLocation.longitude)),
+          icon: BitmapDescriptor.defaultMarker),
+    ].toSet();
+  }
+
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target:
-        LatLng(NotificationLocation.latitude, NotificationLocation.longitude),
+    target: LatLng(double.parse(NotificationLocation.latitude),
+        double.parse(NotificationLocation.longitude)),
     zoom: 18,
   );
-
-  /*static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);*/
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +36,11 @@ class _NotificationLocation extends State<NotificationLocation> {
       body: GoogleMap(
         mapType: MapType.hybrid,
         initialCameraPosition: _kGooglePlex,
+        markers: _createMarker(),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
       ),
     );
   }
-
-  /* Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }*/
 }

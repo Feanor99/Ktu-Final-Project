@@ -20,6 +20,8 @@ class _HelpMeState extends State<HelpMe> {
       'AAAAXTCsRjI:APA91bEVJujo9YTgZgB1KwgJJBYjLavDx857efILIh7mkJCw_XZeMu1Qu-gF5tCSwtoshyZTJoo913uQjHcz7DnIovDytqTFPHm7pgmuuveTG_Yye_ngxVMWQ2eW3f8d1UQnLBZXBOCU';
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
+  String latitude, longitude;
+
   void initState() {
     super.initState();
     updateLocation();
@@ -27,8 +29,9 @@ class _HelpMeState extends State<HelpMe> {
 
   updateLocation() async {
     var location = await GetLocation.checkPermissionThenGetLocation();
-    String userLocation =
-        location.latitude.toString() + ", " + location.longitude.toString();
+    latitude = location.latitude.toString();
+    longitude = location.longitude.toString();
+    String userLocation = latitude + ", " + longitude;
     FirestoreService.updateLastLocation(userLocation);
   }
 
@@ -63,7 +66,7 @@ class _HelpMeState extends State<HelpMe> {
             'data': <String, dynamic>{
               'click_action': 'FLUTTER_NOTIFICATION_CLICK',
               'id': '1',
-              'status': 'done'
+              'status': '$latitude $longitude'
             },
             'to': _token,
           },
