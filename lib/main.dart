@@ -61,10 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<dynamic> firestoreUserData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
-    var location = await GetLocation.checkPermissionThenGetLocation();
+    /*  var location = await GetLocation.checkPermissionThenGetLocation();
 
     String userLocation =
-        location.latitude.toString() + ", " + location.longitude.toString();
+        location.latitude.toString() + ", " + location.longitude.toString();*/ //TODO:
 
     String phone = pref.getString("phone") ?? "";
     if (phone == "") return;
@@ -86,12 +86,13 @@ class _MyHomePageState extends State<MyHomePage> {
             timeInSecForIosWeb: 1,
             textColor: Colors.white,
             fontSize: 15.0);
-        FirestoreService.updateUserNotifyIdAndLocation(userLocation);
+        FirestoreService.updateUserNotifyId();
       } else {
         String name = pref.getString("name") ?? "";
         String surname = pref.getString("surname") ?? "";
 
-        FirestoreService.addUser(name, surname, phone, userLocation);
+        FirestoreService.addUser(name, surname, phone);
+        FirestoreService.addUserPhoneNumber(phone);
 
         Fluttertoast.showToast(
             msg: "Kaydınız tamamlandı. Hoşgeldiniz.",

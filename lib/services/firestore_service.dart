@@ -3,8 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class FirestoreService {
-  static Future<void> addUser(
-      String name, String surname, String phone, String location) async {
+  static Future<void> addUser(String name, String surname, String phone) async {
     final user = FirebaseAuth.instance.currentUser;
     final notifyToken = await FirebaseMessaging.instance.getToken();
     final id = user.uid;
@@ -14,21 +13,31 @@ class FirestoreService {
       "name": name,
       "surname": surname,
       "phone": phone,
-      "notifyToken": notifyToken,
-      "firstLocaion": location
+      "notifyToken": notifyToken
     }).then((value) {
       print('user added');
     });
   }
 
-  static Future<void> updateUserNotifyIdAndLocation(String location) async {
+  static Future<void> addUserPhoneNumber(dynamic phone) async {
+    List<dynamic> temp = [];
+    temp.add(phone);
+    return FirebaseFirestore.instance
+        .collection("allPhoneNumbers")
+        .doc('PhoneNoList')
+        .update(({"data": FieldValue.arrayUnion(temp)}));
+  }
+
+  static Future<void> updateUserNotifyId() async {
     final user = FirebaseAuth.instance.currentUser;
     final notifyToken = await FirebaseMessaging.instance.getToken();
     final id = user.uid;
 
     // Call the user's CollectionReference to add a new user
-    return FirebaseFirestore.instance.collection("users").doc(id).update(
-        {"notifyToken": notifyToken, "firstLocaion": location}).then((value) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"notifyToken": notifyToken}).then((value) {
       print('user updated');
     });
   }
@@ -44,6 +53,16 @@ class FirestoreService {
         .update({"lastLocation": location}).then((value) {
       print('location updated');
     });
+  }
+
+  static Future<List<dynamic>> getAllUserPhone() async {
+    final instance = FirebaseFirestore.instance;
+    final docsSnapshot =
+        await instance.collection("allPhoneNumbers").doc("PhoneNoList").get();
+
+    final docs = docsSnapshot.data();
+
+    return docs["data"];
   }
 
   static Future<List<String>> getNotifyTokensFromUserList(User user) async {
