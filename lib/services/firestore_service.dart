@@ -149,6 +149,9 @@ class FirestoreService {
     final notifySnapshot = await notifyReferance.get();
 
     dynamic data = notifySnapshot.data();
+    if (data == null) {
+      return null;
+    }
     data = data['notify']; // this !MUST! return notify list of the user
 
     List<NotificationModel> models = [];
@@ -178,6 +181,7 @@ class FirestoreService {
     final notifySnapshot = await notifyReferance.get();
 
     dynamic data = notifySnapshot.data();
+
     data = data['notify']; // this !MUST! return notify list of the user
 
     List<Map> newdata = [];

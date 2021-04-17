@@ -15,8 +15,7 @@ class _NotificationsState extends State<Notifications> {
   User user = FirebaseAuth.instance.currentUser;
 
   getNotify() async {
-    final notifies = await FirestoreService.getUserNotifications();
-
+    final notifies = await FirestoreService.getUserNotifications() ?? [];
     setState(() {
       mNotifications = notifies;
     });
@@ -33,7 +32,6 @@ class _NotificationsState extends State<Notifications> {
     setState(() {
       mNotifications = newNotifies;
     });
-    print(id);
     FirestoreService.removeUserNotifiation(id);
   }
 
@@ -50,15 +48,17 @@ class _NotificationsState extends State<Notifications> {
         title: Text("Bildirimler"),
       ),
       body: Container(
-        child: ListView.separated(
-          separatorBuilder: (ctx, index) => Divider(
-            color: Colors.grey,
-          ),
-          itemCount: mNotifications.length,
-          itemBuilder: (BuildContext ctx, int index) {
-            return mNotifications[index].render(removeNotification);
-          },
-        ),
+        child: mNotifications.length > 0
+            ? ListView.separated(
+                separatorBuilder: (ctx, index) => Divider(
+                  color: Colors.grey,
+                ),
+                itemCount: mNotifications.length,
+                itemBuilder: (BuildContext ctx, int index) {
+                  return mNotifications[index].render(removeNotification);
+                },
+              )
+            : Text("Henüz hiç bildirim almadın"),
       ),
     );
   }
