@@ -59,6 +59,8 @@ class _ContactList extends State<ContactList> {
   }
 
   String convertToValidNumber(str) {
+    if (str == "") return null;
+
     str = str.replaceAll(' ', '');
     str = str[0] == '+' ? str.substring(1) : str;
     str = str[0] == '9' ? str.substring(1) : str;
@@ -126,12 +128,21 @@ class _ContactList extends State<ContactList> {
     });
 
     for (var i in _contacts) {
-      contactListString.add(i.phones.elementAt(0).value);
+      if (i.phones.isNotEmpty) {
+        contactListString.add(i.phones.elementAt(0).value);
+      } else {
+        contactListString.add('');
+      }
     }
 
+    Map<int, String> phoneList = {};
+
     for (int i = 0; i < contactListString.length; i++) {
-      contactListString[i] =
+      final str =
           convertToValidNumber(flattenPhoneNumber(contactListString[i]));
+      if (str != null) {
+        phoneList[i] = str;
+      }
     }
 
     List<dynamic> registeredPhoneNos = await FirestoreService.getAllUserPhone();
@@ -140,11 +151,20 @@ class _ContactList extends State<ContactList> {
 
     List<Contact> tempContancts = [];
 
-    for (int i = 0; i < _contacts.length; i++) {
-      if (registeredPhoneNos.contains(contactListString[i])) {
-        tempContancts.add(_contacts[i]);
+    for (var entr in phoneList.entries) {
+      if (registeredPhoneNos.contains(entr.value)) {
+        tempContancts.add(_contacts[entr.key]);
       }
     }
+
+    // for (int i = 0; i < _contacts.length; i++) {
+    //   var contact = _contacts[i];
+    //   if (phoneList.containsKey(i)) {
+    //     if (registeredPhoneNos.contains(phoneList[i])) {
+    //       tempContancts.add(contact);
+    //     }
+    //   }
+    // }
 
     setState(() {
       contacts = tempContancts;

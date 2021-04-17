@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-Earthquake getShakeFromJson(String str) =>
+Earthquake getEarthquakeFromJson(String str) =>
     Earthquake.fromJson(json.decode(str));
 
 class Earthquake {

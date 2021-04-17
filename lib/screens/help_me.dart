@@ -72,16 +72,12 @@ class _HelpMeState extends State<HelpMe> {
           },
         ),
       );
+      var data = {'latitude': latitude, 'longitude': longitude};
+      await FirestoreService.setNotificationToDb(user.uid, _token, data);
     });
 
     final Completer<Map<String, dynamic>> completer =
         Completer<Map<String, dynamic>>();
-
-    /*firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        completer.complete(message);
-      },
-    );*/ // DEPRECATED
 
     return completer.future;
   }

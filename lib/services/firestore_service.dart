@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_app/models/notification_modal.dart';
+import 'package:uuid/uuid.dart';
 
 class FirestoreService {
   static Future<void> addUser(String name, String surname, String phone) async {
@@ -78,7 +80,7 @@ class FirestoreService {
     if (docs.length <= 0 || docs == null)
       return null; // REHBERE KIMSEYI EKLEMEMIS
 
-    List<String> tokens = new List<String>();
+    List<String> tokens = [];
 
     for (QueryDocumentSnapshot element in docs) {
       String phoneNumber = element['phoneNumber'];
@@ -99,5 +101,94 @@ class FirestoreService {
     }
 
     return tokens;
+  }
+
+  static Future<void> setNotificationToDb(
+      String senderId, String receiverToken, Map<String, String> data) async {
+    final instance = FirebaseFirestore.instance;
+
+    final userSnapshot = await instance
+        .collection('users')
+        .where('notifyToken', isEqualTo: receiverToken)
+        .get();
+    final receiverId = userSnapshot.docs[0].id;
+
+    CollectionReference allNotificationRef =
+        instance.collection('allNotifications');
+
+    DocumentReference docRef = allNotificationRef.doc(receiverId);
+    DocumentSnapshot docSnap = await allNotificationRef.doc(receiverId).get();
+    var uuid = Uuid();
+
+    final fbData = {
+      'id': uuid.v4(),
+      'receiverId': receiverId,
+      'senderId': senderId,
+      'date': DateTime.now(),
+      ...data
+    };
+
+    if (docSnap.exists) {
+      docRef.update({
+        'notify': FieldValue.arrayUnion([fbData])
+      });
+    } else {
+      docRef.set({
+        'notify': [fbData]
+      });
+    }
+  }
+
+  static Future<List<NotificationModel>> getUserNotifications() async {
+    final instance = FirebaseFirestore.instance;
+    final user = FirebaseAuth.instance.currentUser;
+
+    DocumentReference notifyReferance =
+        instance.collection('allNotifications').doc(user.uid);
+
+    final notifySnapshot = await notifyReferance.get();
+
+    dynamic data = notifySnapshot.data();
+    data = data['notify']; // this !MUST! return notify list of the user
+
+    List<NotificationModel> models = [];
+
+    for (var model in data) {
+      DocumentReference userRef =
+          instance.collection('users').doc(model['senderId']);
+
+      final userSnap = await userRef.get();
+
+      model['senderName'] =
+          userSnap.data()['name'] + ' ' + userSnap.data()['surname'];
+
+      NotificationModel myModel = NotificationModel.fromJson(model);
+      models.add(myModel);
+    }
+    return models;
+  }
+
+  static Future removeUserNotifiation(String id) async {
+    final instance = FirebaseFirestore.instance;
+    final user = FirebaseAuth.instance.currentUser;
+
+    DocumentReference notifyReferance =
+        instance.collection('allNotifications').doc(user.uid);
+
+    final notifySnapshot = await notifyReferance.get();
+
+    dynamic data = notifySnapshot.data();
+    data = data['notify']; // this !MUST! return notify list of the user
+
+    List<Map> newdata = [];
+    data.forEach((element) => {
+          if (element['id'] != id) {newdata.add(element)}
+        });
+    print(data);
+    print(newdata);
+    await instance
+        .collection("allNotifications")
+        .doc(user.uid)
+        .set({'notify': newdata});
   }
 }

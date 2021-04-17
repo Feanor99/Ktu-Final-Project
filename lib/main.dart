@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/message.dart';
 import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/screens/notification_location.dart';
+import 'package:flutter_app/screens/notifications.dart';
 import 'package:flutter_app/services/authservice.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:flutter_app/services/get_location.dart';
@@ -174,6 +175,16 @@ class _MyHomePageState extends State<MyHomePage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: InkWell(
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Notifications())),
+              child: Icon(Icons.notifications),
+            ),
+          ),
+        ],
       ),
       drawer: MainDrawer(),
       body: Center(

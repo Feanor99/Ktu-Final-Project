@@ -39,6 +39,7 @@ dependencies:
   encrypt: ^4.1.0
   location: ^4.1.0
   google_maps_flutter: ^2.0.1
+  uuid: ^2.2.2
 
 dev_dependencies:
   flutter_test:
