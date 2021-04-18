@@ -65,7 +65,7 @@ class _HelpMeState extends State<HelpMe> {
             'priority': 'high',
             'data': <String, dynamic>{
               'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              'id': '1',
+              'notification_id': '1',
               'status': '$latitude $longitude'
             },
             'to': _token,

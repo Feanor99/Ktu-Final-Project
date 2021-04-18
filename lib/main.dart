@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,14 +8,13 @@ import 'package:flutter_app/screens/notification_location.dart';
 import 'package:flutter_app/screens/notifications.dart';
 import 'package:flutter_app/services/authservice.dart';
 import 'package:flutter_app/services/firestore_service.dart';
-import 'package:flutter_app/services/get_location.dart';
+
 import 'package:flutter_app/widgets/left_menu.dart';
 import 'package:flutter_app/screens/users_list.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/deprem_liste.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -121,16 +118,29 @@ class _MyHomePageState extends State<MyHomePage> {
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        String location = message.data['status'];
+        String notificationId = message.data['notification_id'];
+        switch (notificationId) {
+          case '1':
+            String location = message.data['status'];
 
-        NotificationLocation.latitude =
-            location.substring(0, location.indexOf(' '));
+            NotificationLocation.latitude =
+                location.substring(0, location.indexOf(' '));
 
-        NotificationLocation.longitude =
-            location.substring(location.indexOf(' ') + 1);
+            NotificationLocation.longitude =
+                location.substring(location.indexOf(' ') + 1);
 
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => NotificationLocation()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => NotificationLocation()));
+            break;
+          case '2':
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HelpMe()));
+            break;
+          default:
+            break;
+        }
       }
     });
   }
