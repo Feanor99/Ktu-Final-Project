@@ -1,5 +1,6 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/users_list.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,16 +38,20 @@ class _ContactList extends State<ContactList> {
       return;
     }
 
-    CollectionReference usersList =
-        FirebaseFirestore.instance.collection('usersList');
     FirebaseAuth auth = FirebaseAuth.instance;
     String uid = auth.currentUser.uid.toString();
 
-    usersList.add({
-      'displayName': displayName,
-      'phoneNumber': convertToValidNumber(phoneNumber),
-      'uid': uid
-    }).then((_) {
+    var user = [
+      {
+        'displayName': displayName,
+        'phoneNumber': convertToValidNumber(phoneNumber)
+      }
+    ];
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'userList': FieldValue.arrayUnion(user)}).then((_) {
       Fluttertoast.showToast(
           msg: "Başarıyla Eklendi",
           toastLength: Toast.LENGTH_LONG,
@@ -69,17 +74,22 @@ class _ContactList extends State<ContactList> {
     return str;
   }
 
+  Future getUserData(user_id) async {
+    var snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(user_id).get();
+    return snapshot.data();
+  }
+
   Future<bool> doesPhoneAlreadyExist(String phoneNumber) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     String uid = auth.currentUser.uid.toString();
-    final QuerySnapshot result = await FirebaseFirestore.instance
-        .collection('usersList')
-        .where('phoneNumber', isEqualTo: convertToValidNumber(phoneNumber))
-        .where('uid', isEqualTo: uid)
-        .limit(1)
-        .get();
-    final List<DocumentSnapshot> documents = result.docs;
-    return documents.length == 1;
+    var userData = await getUserData(uid);
+    var userList = userData['userList'] == null ? [] : userData['userList'];
+    var phones = [];
+    for (var i = 0; i < userList.length; i++) {
+      phones.add(userList[i]['phoneNumber']);
+    }
+    return phones.contains(convertToValidNumber(phoneNumber));
   }
 
   Future<bool> doesUserExist(String phoneNumber) async {
@@ -220,7 +230,10 @@ class _ContactList extends State<ContactList> {
           appBar: AppBar(
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UsersList()),
+              ).then((value) => setState(() {})),
             ),
             title: Text('Yeni Kişi Ekle'),
           ),
