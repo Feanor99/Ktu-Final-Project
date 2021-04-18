@@ -37,7 +37,6 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: AuthService().handleAuth(),
-      //home: NotificationLocation(),
     );
   }
 }
@@ -123,16 +122,15 @@ class _MyHomePageState extends State<MyHomePage> {
           case '1':
             String location = message.data['status'];
 
-            NotificationLocation.latitude =
-                location.substring(0, location.indexOf(' '));
+            String latitude = location.substring(0, location.indexOf(' '));
 
-            NotificationLocation.longitude =
-                location.substring(location.indexOf(' ') + 1);
+            String longitude = location.substring(location.indexOf(' ') + 1);
 
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => NotificationLocation()));
+                    builder: (context) =>
+                        NotificationLocation(latitude, longitude)));
             break;
           case '2':
             Navigator.push(
@@ -152,24 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (this.mounted) checkNotificationData();
     });
-
-    /* firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage : $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch : $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume : $message");
-      },
-    );
-    if (Platform.isIOS) {
-      firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: false),
-      );
-    }*/ //DEPRECATED
 
     checkUser();
 
