@@ -66,7 +66,8 @@ class _ContactList extends State<ContactList> {
   String convertToValidNumber(str) {
     if (str == "") return null;
 
-    str = str.replaceAll(' ', '');
+    str = str.replaceAll(new RegExp(r"\D"), "");
+
     str = str[0] == '+' ? str.substring(1) : str;
     str = str[0] == '9' ? str.substring(1) : str;
     str = str[0] == '0' ? str.substring(1) : str;
