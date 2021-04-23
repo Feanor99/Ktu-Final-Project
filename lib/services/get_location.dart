@@ -25,8 +25,7 @@ class GetLocation {
     }
 
     _locationData = await location.getLocation();
-    print(_locationData.longitude);
-    print(_locationData);
+
     return _locationData;
   }
 }

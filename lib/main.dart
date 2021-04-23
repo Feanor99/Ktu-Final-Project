@@ -1,23 +1,21 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/message.dart';
+import 'package:flutter_app/screens/do_you_safe.dart';
 import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/screens/notification_location.dart';
 import 'package:flutter_app/screens/notifications.dart';
 import 'package:flutter_app/services/authservice.dart';
 import 'package:flutter_app/services/firestore_service.dart';
-import 'package:flutter_app/services/get_location.dart';
+
 import 'package:flutter_app/widgets/left_menu.dart';
 import 'package:flutter_app/screens/users_list.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/deprem_liste.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +38,6 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: AuthService().handleAuth(),
-      //home: NotificationLocation(),
     );
   }
 }
@@ -121,16 +118,29 @@ class _MyHomePageState extends State<MyHomePage> {
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        String location = message.data['status'];
+        String notificationId = message.data['notification_id'];
+        switch (notificationId) {
+          case '1':
+            String location = message.data['status'];
 
-        NotificationLocation.latitude =
-            location.substring(0, location.indexOf(' '));
+            String latitude = location.substring(0, location.indexOf(' '));
 
-        NotificationLocation.longitude =
-            location.substring(location.indexOf(' ') + 1);
+            String longitude = location.substring(location.indexOf(' ') + 1);
 
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => NotificationLocation()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        NotificationLocation(latitude, longitude)));
+            break;
+          case '2':
+            if (double.parse(message.data['magnitude']) > 5.4)
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => DoYouSafe()));
+            break;
+          default:
+            break;
+        }
       }
     });
   }
@@ -143,30 +153,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (this.mounted) checkNotificationData();
     });
 
-    /* firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage : $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch : $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume : $message");
-      },
-    );
-    if (Platform.isIOS) {
-      firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: false),
-      );
-    }*/ //DEPRECATED
-
     checkUser();
 
-    Message message = new Message("merhaba nasılsınız acaba");
-    message.encryptAndSendMessage();
-    print("---------");
-    message.decryptRecivedMessage();
+    // Message message = new Message("merhaba nasılsınız acaba");
+    // message.encryptAndSendMessage();
+    // print("---------");
+    // message.decryptRecivedMessage();
   }
 
   @override
@@ -218,7 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ShakeListScreen())),
+                            builder:
+                                (context) => /*ShakeListScreen()*/ DoYouSafe())),
                     color: Colors.blue,
                     minWidth: 230,
                     padding: EdgeInsets.only(top: 20, bottom: 20),

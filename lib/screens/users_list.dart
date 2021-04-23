@@ -13,9 +13,20 @@ class UsersList extends StatefulWidget {
 }
 
 class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
+  var userList = [];
+  getData() async {
+    var snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    setState(() {
+      var userData = snapshot.data();
+      userList = userData['userList'] == null ? [] : userData['userList'];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getData();
   }
 
   @override
@@ -29,7 +40,8 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
           ),
           title: Text('Kişilerim'),
         ),
@@ -39,86 +51,87 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('usersList')
-                        .where('uid', isEqualTo: uid)
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-                        return Center(
-                            child: Container(
-                          child: Text('Kişi listeniz boş'),
-                        ));
-                      }
-                      return ListView(
-                        children: snapshot.data.docs.map((document) {
-                          return ListTile(
-                              title: Text(document['displayName']),
-                              subtitle: Text(document['phoneNumber']),
-                              trailing: new Container(
-                                  child: new RaisedButton.icon(
-                                color: Colors.red,
-                                textColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text(document['displayName']),
-                                        content: Text(document['phoneNumber']),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            child: Text("Kişilerimden Sil"),
-                                            onPressed: () {
-                                              FirebaseFirestore.instance
-                                                  .collection('usersList')
-                                                  .doc(document.id)
-                                                  .delete();
-                                              Navigator.pop(context);
-                                              Fluttertoast.showToast(
-                                                  msg: "İşlem Başarılı",
-                                                  toastLength:
-                                                      Toast.LENGTH_LONG,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  backgroundColor:
-                                                      Colors.black54,
-                                                  timeInSecForIosWeb: 1,
-                                                  textColor: Colors.white,
-                                                  fontSize: 15.0);
-                                            },
-                                          )
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                label: Text(
-                                  'Sil',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              )),
-                              leading: Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.blue,
+                  child: (userList == null || userList.length == 0)
+                      ? Center(
+                          child: Container(child: Text('Kişi listeniz boş')))
+                      : ListView.builder(
+                          itemCount: userList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                                title: Text(userList[index]['displayName']),
+                                subtitle: Text(userList[index]['phoneNumber']),
+                                trailing: new Container(
+                                    child: new RaisedButton.icon(
+                                  color: Colors.red,
+                                  textColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                              userList[index]['displayName']),
+                                          content: Text(
+                                              userList[index]['phoneNumber']),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              child: Text("Kişilerimden Sil"),
+                                              onPressed: () {
+                                                userList.removeWhere((item) =>
+                                                    item['phoneNumber'] ==
+                                                    userList[index]
+                                                        ['phoneNumber']);
+                                                DocumentReference user =
+                                                    FirebaseFirestore.instance
+                                                        .collection('users')
+                                                        .doc(uid);
+                                                user.update({
+                                                  'userList': userList,
+                                                }).then((_) {
+                                                  Navigator.pop(context);
+                                                  Fluttertoast.showToast(
+                                                      msg: "İşlem Başarılı",
+                                                      toastLength:
+                                                          Toast.LENGTH_LONG,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      backgroundColor:
+                                                          Colors.black54,
+                                                      timeInSecForIosWeb: 1,
+                                                      textColor: Colors.white,
+                                                      fontSize: 15.0);
+                                                  setState(() {});
+                                                });
+                                              },
+                                            )
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  label: Text(
+                                    'Sil',
+                                    style: TextStyle(color: Colors.white),
                                   ),
-                                  child: CircleAvatar(
-                                      child: Text(document['displayName'][0]),
-                                      backgroundColor: Colors.transparent)));
-                        }).toList(),
-                      );
-                    }),
-              ),
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                  ),
+                                )),
+                                leading: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.blue,
+                                    ),
+                                    child: CircleAvatar(
+                                        child: Text(
+                                            userList[index]['displayName'][0]),
+                                        backgroundColor: Colors.transparent)));
+                          })),
               Container(
                   margin: EdgeInsets.only(bottom: 20),
                   height: 60,

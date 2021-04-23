@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../main.dart';
+
 class DepremHazirlik extends StatefulWidget {
   @override
   _DepremHazirlik createState() => _DepremHazirlik();
@@ -85,9 +87,14 @@ class _DepremHazirlik extends State<DepremHazirlik>
             tabs: tabHeaders,
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Route route = MaterialPageRoute(
+                    builder: (context) => MyHomePage(
+                          title: "Deprem Acil Yardım",
+                        ));
+                Navigator.pushReplacement(context, route);
+              }),
           title: Text('Deprem'),
         ),
         body: TabBarView(
