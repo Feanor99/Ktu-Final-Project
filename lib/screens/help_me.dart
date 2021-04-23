@@ -6,8 +6,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:flutter_app/services/get_location.dart';
+import 'package:flutter_app/widgets/why_need_location.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HelpMe extends StatefulWidget {
@@ -24,15 +26,33 @@ class _HelpMeState extends State<HelpMe> {
 
   void initState() {
     super.initState();
-    updateLocation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (this.mounted) updateLocation();
+    });
   }
 
   updateLocation() async {
     var location = await GetLocation.checkPermissionThenGetLocation();
-    latitude = location.latitude.toString();
-    longitude = location.longitude.toString();
-    String userLocation = latitude + ", " + longitude;
-    FirestoreService.updateLastLocation(userLocation);
+    bool granted = false;
+
+    if (location == null) {
+      await LocationHelper.locationNeededFor(context);
+      location = await GetLocation.checkPermissionThenGetLocation();
+      if (location == null) {
+        await LocationHelper.locationNeededFor(context, showSettingBut: true);
+      } else
+        granted = true;
+    } else
+      granted = true;
+
+    if (granted) {
+      latitude = location.latitude.toString();
+      longitude = location.longitude.toString();
+      String userLocation = latitude + ", " + longitude;
+      FirestoreService.updateLastLocation(userLocation);
+    } else {
+      Navigator.pop(context);
+    }
   }
 
   Future<Map<String, dynamic>> sendAndRetrieveMessage() async {
