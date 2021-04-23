@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/notification_location.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 
 class NotificationModel {
@@ -18,7 +19,11 @@ class NotificationModel {
       this.longitude,
       this.date});
 
-  goToLocation() {
+  goToLocation(BuildContext context) {
+    Route route = MaterialPageRoute(
+        builder: (context) =>
+            NotificationLocation(this.latitude, this.longitude));
+    Navigator.push(context, route);
     print("Belirlenen lokasyona git!");
   }
 
@@ -26,30 +31,31 @@ class NotificationModel {
     FirestoreService.removeUserNotifiation(this.id);
   }
 
-  since() {
-    int min = DateTime.now()
-        .toUtc()
-        .difference(
-          this.date.toDate(),
-        )
-        .inMinutes;
+  localDate() {
+    final datestr =
+        DateTime.fromMillisecondsSinceEpoch(this.date.millisecondsSinceEpoch)
+            .toLocal()
+            .toString();
+    final date = datestr.split(' ');
+    String _date = date[0];
+    dynamic time = date[1];
 
-    if (min >= 60) {
-      return (min % 60).toString() + 's';
-    }
+    time = time.split(':');
+    time.removeLast();
+    time = time.join(':');
 
-    if (min < 60) {
-      return (min).toString() + 'd';
-    }
+    return _date + ' ' + time;
   }
 
-  render(dynamic remove) {
+  render(BuildContext context, dynamic remove) {
     return InkWell(
-      onTap: goToLocation,
+      onTap: () {
+        goToLocation(context);
+      },
       child: Container(
         height: 80,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(5.0),
           child: Row(
             children: [
               Expanded(
@@ -66,7 +72,7 @@ class NotificationModel {
                           text:
                               'Sizden yardım istedi. Hemen tıklayın ve nerede olduğunu öğrenin '),
                       TextSpan(
-                        text: since(),
+                        text: '\n' + localDate(),
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],
@@ -75,8 +81,7 @@ class NotificationModel {
               ),
               ElevatedButton(
                   onPressed: () {
-                    print(this.id);
-                    remove(this.id);
+                    remove(this.id); // parent function
                   },
                   child: Text("Sil")),
             ],

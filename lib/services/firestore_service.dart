@@ -82,8 +82,9 @@ class FirestoreService {
 
     List<String> tokens = [];
 
-    for (Map<String, String> contact in contactList) {
-      tokens.add(contact['phoneNumber']);
+    for (Map<String, dynamic> contact in contactList) {
+      final userData = await getUserDataWithPhoneNumber(contact['phoneNumber']);
+      tokens.add(userData['notifyToken']);
     }
 
     return tokens;
@@ -180,5 +181,22 @@ class FirestoreService {
         .collection("allNotifications")
         .doc(user.uid)
         .set({'notify': newdata});
+  }
+
+  /// Verilen telefon numarasina sahip kisiyi veri tabanindan ceker
+  static Future getUserDataWithPhoneNumber(String phoneNumber) async {
+    final instance = FirebaseFirestore.instance;
+
+    final userSnapshot = await instance
+        .collection('users')
+        .where('phone', isEqualTo: phoneNumber)
+        .get();
+
+    // bu telefon numarasina sahip biri yok!
+    if (userSnapshot.size <= 0) return null;
+
+    final userSnap = userSnapshot.docs[0];
+
+    return userSnap.data();
   }
 }

@@ -55,7 +55,8 @@ class _NotificationsState extends State<Notifications> {
                 ),
                 itemCount: mNotifications.length,
                 itemBuilder: (BuildContext ctx, int index) {
-                  return mNotifications[index].render(removeNotification);
+                  return mNotifications[index]
+                      .render(context, removeNotification);
                 },
               )
             : Text("Henüz hiç bildirim almadın"),
