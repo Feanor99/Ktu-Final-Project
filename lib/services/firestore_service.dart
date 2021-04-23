@@ -70,34 +70,20 @@ class FirestoreService {
   static Future<List<String>> getNotifyTokensFromUserList(User user) async {
     if (user == null) return null;
     final instance = FirebaseFirestore.instance;
-    final docsSnapshot = await instance
-        .collection("usersList")
-        .where('uid', isEqualTo: user.uid)
-        .get();
 
-    final docs = docsSnapshot.docs;
+    final userSnap = await instance.collection('users').doc(user.uid).get();
 
-    if (docs.length <= 0 || docs == null)
-      return null; // REHBERE KIMSEYI EKLEMEMIS
+    final userData = userSnap.data();
+
+    // REHBERE KIMSE EKLENMEMIS
+    if (!userData.containsKey('userList')) return null;
+
+    final contactList = userData['userList'];
 
     List<String> tokens = [];
 
-    for (QueryDocumentSnapshot element in docs) {
-      String phoneNumber = element['phoneNumber'];
-      final userSnap = await instance
-          .collection("users")
-          .where('phone', isEqualTo: phoneNumber)
-          .limit(1)
-          .get();
-
-      if (userSnap.docs.length > 0) {
-        final anotherUser = userSnap.docs[0].data();
-        final notifyToken = anotherUser['notifyToken'];
-
-        if (notifyToken == "" || notifyToken == null) return null;
-
-        tokens.add(notifyToken);
-      }
+    for (Map<String, String> contact in contactList) {
+      tokens.add(contact['phoneNumber']);
     }
 
     return tokens;

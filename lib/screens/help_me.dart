@@ -40,8 +40,12 @@ class _HelpMeState extends State<HelpMe> {
     if (user == null) return null;
     final contactTokens =
         await FirestoreService.getNotifyTokensFromUserList(user);
-    if (contactTokens.length <= 0 || contactTokens == null)
-      return null; // TOKEN YOK
+
+    // contact list bos
+    if (contactTokens == null) return null;
+
+    // contact list bos
+    if (contactTokens.isEmpty) return null;
 
     SharedPreferences pref = await SharedPreferences.getInstance();
     var buffer = new StringBuffer();
