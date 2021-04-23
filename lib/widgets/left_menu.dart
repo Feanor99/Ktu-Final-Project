@@ -32,14 +32,16 @@ class MainDrawer extends StatelessWidget {
         ),
         Card(
             child: ListTile(
-          leading: Icon(Icons.info_sharp),
-          title: Text('Acil Durum Rehberi',
-              style: TextStyle(
-                fontSize: 16,
-              )),
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => DepremHazirlik())),
-        )),
+                leading: Icon(Icons.info_sharp),
+                title: Text('Acil Durum Rehberi',
+                    style: TextStyle(
+                      fontSize: 16,
+                    )),
+                onTap: () {
+                  Route route =
+                      MaterialPageRoute(builder: (context) => DepremHazirlik());
+                  Navigator.pushReplacement(context, route);
+                })),
         Card(
             child: ListTile(
           leading: Icon(Icons.directions_run),

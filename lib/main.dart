@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/message.dart';
+import 'package:flutter_app/screens/do_you_safe.dart';
 import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/screens/notification_location.dart';
 import 'package:flutter_app/screens/notifications.dart';
@@ -133,8 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         NotificationLocation(latitude, longitude)));
             break;
           case '2':
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => HelpMe()));
+            if (double.parse(message.data['magnitude']) > 5.4)
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => DoYouSafe()));
             break;
           default:
             break;
@@ -153,10 +155,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     checkUser();
 
-    Message message = new Message("merhaba nasılsınız acaba");
-    message.encryptAndSendMessage();
-    print("---------");
-    message.decryptRecivedMessage();
+    // Message message = new Message("merhaba nasılsınız acaba");
+    // message.encryptAndSendMessage();
+    // print("---------");
+    // message.decryptRecivedMessage();
   }
 
   @override
@@ -208,7 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ShakeListScreen())),
+                            builder:
+                                (context) => /*ShakeListScreen()*/ DoYouSafe())),
                     color: Colors.blue,
                     minWidth: 230,
                     padding: EdgeInsets.only(top: 20, bottom: 20),

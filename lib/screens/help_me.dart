@@ -12,6 +12,8 @@ import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'deprem_hazirlik.dart';
+
 class HelpMe extends StatefulWidget {
   @override
   _HelpMeState createState() => _HelpMeState();
@@ -26,7 +28,7 @@ class _HelpMeState extends State<HelpMe> {
 
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (this.mounted) updateLocation();
     });
   }
@@ -49,7 +51,7 @@ class _HelpMeState extends State<HelpMe> {
       latitude = location.latitude.toString();
       longitude = location.longitude.toString();
       String userLocation = latitude + ", " + longitude;
-      FirestoreService.updateLastLocation(userLocation);
+      await FirestoreService.updateLastLocation(userLocation);
     } else {
       Navigator.pop(context);
     }
@@ -139,6 +141,9 @@ class _HelpMeState extends State<HelpMe> {
                             child: Text("Gönder"),
                             onPressed: () {
                               Navigator.pop(context);
+                              Route route = MaterialPageRoute(
+                                  builder: (context) => DepremHazirlik());
+                              Navigator.pushReplacement(context, route);
                               Fluttertoast.showToast(
                                   msg: "Yardım Çağrısı Gönderildi",
                                   toastLength: Toast.LENGTH_LONG,
