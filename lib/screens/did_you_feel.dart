@@ -1,71 +1,22 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/help_me.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class DoYouSafe extends StatefulWidget {
+class DidYouFeel extends StatefulWidget {
+  final id;
+  DidYouFeel(this.id);
   @override
-  _DoYouSafe createState() => _DoYouSafe();
+  _DidYouFeel createState() => _DidYouFeel(id);
 }
 
-class _DoYouSafe extends State<DoYouSafe> {
-  final String serverToken =
-      'AAAAXTCsRjI:APA91bEVJujo9YTgZgB1KwgJJBYjLavDx857efILIh7mkJCw_XZeMu1Qu-gF5tCSwtoshyZTJoo913uQjHcz7DnIovDytqTFPHm7pgmuuveTG_Yye_ngxVMWQ2eW3f8d1UQnLBZXBOCU';
-
-  Future<Map<String, dynamic>> sendAndRetrieveMessage(String msg) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return null;
-    final contactTokens =
-        await FirestoreService.getNotifyTokensFromUserList(user);
-    // contact list bos
-    if (contactTokens == null) return null;
-
-    // contact list bos
-    if (contactTokens.isEmpty) return null;
-
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    var buffer = new StringBuffer();
-    buffer.write(pref.getString("name"));
-    buffer.write(" ");
-    buffer.write(pref.getString("surname"));
-    final name = buffer.toString();
-    contactTokens.forEach((_token) async {
-      await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'key=$serverToken',
-        },
-        body: jsonEncode(
-          <String, dynamic>{
-            'notification': <String, dynamic>{
-              'body': '$msg',
-              'title': name,
-            },
-            'priority': 'high',
-            'data': <String, dynamic>{
-              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              'notification_id': '3',
-            },
-            'to': _token,
-          },
-        ),
-      );
-    });
-
-    final Completer<Map<String, dynamic>> completer =
-        Completer<Map<String, dynamic>>();
-
-    return completer.future;
-  }
-
+class _DidYouFeel extends State<DidYouFeel> {
+  final id;
+  _DidYouFeel(this.id);
   doYouSafeDialog() async {
     await showDialog<void>(
       context: context,
@@ -80,7 +31,7 @@ class _DoYouSafe extends State<DoYouSafe> {
                 child: ListBody(
                   children: <Widget>[
                     Text(
-                      'Ev Konumunuza Yakın >5.5 büyüklüğünde deprem oldu.',
+                      'Ev Konumunuza Yakın deprem oldu. Hissettiniz mi?',
                       style: TextStyle(fontSize: 18.0),
                     )
                   ],
@@ -88,7 +39,29 @@ class _DoYouSafe extends State<DoYouSafe> {
               ),
               actions: <Widget>[
                 ElevatedButton(
-                    child: Center(child: Text('Güvendeyim')),
+                    child: Center(child: Text('Hissettim')),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          return Colors.green; // Use the component's default.
+                        },
+                      ),
+                    ),
+                    onPressed: () async {
+                      await FirestoreService.feltThisEarthQuake(id);
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Fluttertoast.showToast(
+                          msg: "Geri Bildiriminiz Alındı",
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.black54,
+                          timeInSecForIosWeb: 1,
+                          textColor: Colors.white,
+                          fontSize: 15.0);
+                    }),
+                ElevatedButton(
+                    child: Center(child: Text('Hayır')),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
@@ -97,13 +70,10 @@ class _DoYouSafe extends State<DoYouSafe> {
                       ),
                     ),
                     onPressed: () {
-                      sendAndRetrieveMessage(
-                          "Deprem hissettim ve Güvendeyim lütfen hatları meşgul etme");
                       Navigator.pop(context);
                       Navigator.pop(context);
-
                       Fluttertoast.showToast(
-                          msg: "Güvende olduğunuz bildirildi.",
+                          msg: "Geri Bildiriminiz Alındı",
                           toastLength: Toast.LENGTH_LONG,
                           gravity: ToastGravity.BOTTOM,
                           backgroundColor: Colors.black54,

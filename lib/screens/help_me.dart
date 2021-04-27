@@ -144,7 +144,6 @@ class _HelpMeState extends State<HelpMe> {
                         FlatButton(
                             child: Text("Gönder"),
                             onPressed: () {
-                              Navigator.pop(context);
                               Route route = MaterialPageRoute(
                                   builder: (context) => DepremHazirlik());
                               Navigator.pushReplacement(context, route);

@@ -89,11 +89,13 @@ class _DepremHazirlik extends State<DepremHazirlik>
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Route route = MaterialPageRoute(
-                    builder: (context) => MyHomePage(
-                          title: "Deprem Acil Yardım",
-                        ));
-                Navigator.pushReplacement(context, route);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => MyHomePage(
+                              title: "Deprem Acil Yardım",
+                            )),
+                    ModalRoute.withName('/'));
               }),
           title: Text('Deprem'),
         ),

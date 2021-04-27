@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/message.dart';
+import 'package:flutter_app/screens/did_you_feel.dart';
 import 'package:flutter_app/screens/do_you_safe.dart';
 import 'package:flutter_app/screens/help_me.dart';
 import 'package:flutter_app/screens/notification_location.dart';
@@ -137,6 +138,12 @@ class _MyHomePageState extends State<MyHomePage> {
             if (double.parse(message.data['magnitude']) > 5.4)
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => DoYouSafe()));
+            else
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          DidYouFeel(message.data['earthquake_id'])));
             break;
           default:
             break;
@@ -210,8 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder:
-                                (context) => /*ShakeListScreen()*/ DoYouSafe())),
+                            builder: (context) => ShakeListScreen())),
                     color: Colors.blue,
                     minWidth: 230,
                     padding: EdgeInsets.only(top: 20, bottom: 20),

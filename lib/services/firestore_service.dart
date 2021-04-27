@@ -15,7 +15,10 @@ class FirestoreService {
       "name": name,
       "surname": surname,
       "phone": phone,
-      "notifyToken": notifyToken
+      "notifyToken": notifyToken,
+      "lastLocation": "",
+      "homeLocation": "",
+      "AffectedFrom": <String>[]
     }).then((value) {
       print('user added');
     });
@@ -198,5 +201,19 @@ class FirestoreService {
     final userSnap = userSnapshot.docs[0];
 
     return userSnap.data();
+  }
+
+  static Future<void> feltThisEarthQuake(dynamic earthquakeId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final id = user.uid;
+    List<dynamic> temp = [];
+    temp.add(earthquakeId);
+    // Call the user's CollectionReference to add a new user
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"AffectedFrom": FieldValue.arrayUnion(temp)}).then((value) {
+      print('Affacted from updated');
+    });
   }
 }
