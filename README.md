@@ -1,2 +1,2 @@
-Bu projenin readmisini deðiþtiriyorum
+Bu projenin readmisini deðiþtiriyorum!
 
