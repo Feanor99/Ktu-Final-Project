@@ -92,8 +92,8 @@ class _DidYouFeel extends State<DidYouFeel> {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
-                      Route route =
-                          MaterialPageRoute(builder: (context) => HelpMe());
+                      Route route = MaterialPageRoute(
+                          builder: (context) => HelpMe(eqID: id));
                       Navigator.pushReplacement(context, route);
                     }),
               ],

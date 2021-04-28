@@ -38,9 +38,10 @@ class MainDrawer extends StatelessWidget {
                       fontSize: 16,
                     )),
                 onTap: () {
-                  Route route =
-                      MaterialPageRoute(builder: (context) => DepremHazirlik());
-                  Navigator.pushReplacement(context, route);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DepremHazirlik()));
                 })),
         Card(
             child: ListTile(

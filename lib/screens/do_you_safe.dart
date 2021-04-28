@@ -11,11 +11,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DoYouSafe extends StatefulWidget {
+  final eqID;
+  DoYouSafe(this.eqID);
   @override
-  _DoYouSafe createState() => _DoYouSafe();
+  _DoYouSafe createState() => _DoYouSafe(eqID: eqID);
 }
 
 class _DoYouSafe extends State<DoYouSafe> {
+  final eqID;
+  _DoYouSafe({this.eqID});
   final String serverToken =
       'AAAAXTCsRjI:APA91bEVJujo9YTgZgB1KwgJJBYjLavDx857efILIh7mkJCw_XZeMu1Qu-gF5tCSwtoshyZTJoo913uQjHcz7DnIovDytqTFPHm7pgmuuveTG_Yye_ngxVMWQ2eW3f8d1UQnLBZXBOCU';
 
@@ -96,9 +100,10 @@ class _DoYouSafe extends State<DoYouSafe> {
                         },
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       sendAndRetrieveMessage(
                           "Deprem hissettim ve Güvendeyim lütfen hatları meşgul etme");
+                      await FirestoreService.imSafe(eqID);
                       Navigator.pop(context);
                       Navigator.pop(context);
 
@@ -122,8 +127,8 @@ class _DoYouSafe extends State<DoYouSafe> {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
-                      Route route =
-                          MaterialPageRoute(builder: (context) => HelpMe());
+                      Route route = MaterialPageRoute(
+                          builder: (context) => HelpMe(eqID: eqID));
                       Navigator.pushReplacement(context, route);
                     }),
               ],

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +16,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'deprem_hazirlik.dart';
 
 class HelpMe extends StatefulWidget {
+  final eqID;
+  HelpMe({this.eqID});
   @override
-  _HelpMeState createState() => _HelpMeState();
+  _HelpMeState createState() => _HelpMeState(eqID: eqID);
 }
 
 class _HelpMeState extends State<HelpMe> {
+  final eqID;
+  _HelpMeState({this.eqID});
   final String serverToken =
       'AAAAXTCsRjI:APA91bEVJujo9YTgZgB1KwgJJBYjLavDx857efILIh7mkJCw_XZeMu1Qu-gF5tCSwtoshyZTJoo913uQjHcz7DnIovDytqTFPHm7pgmuuveTG_Yye_ngxVMWQ2eW3f8d1UQnLBZXBOCU';
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
@@ -143,7 +148,10 @@ class _HelpMeState extends State<HelpMe> {
                       actions: <Widget>[
                         FlatButton(
                             child: Text("Gönder"),
-                            onPressed: () {
+                            onPressed: () async {
+                              sendAndRetrieveMessage();
+                              if (eqID != null)
+                                await FirestoreService.eqHelpRequest(eqID);
                               Route route = MaterialPageRoute(
                                   builder: (context) => DepremHazirlik());
                               Navigator.pushReplacement(context, route);
@@ -155,7 +163,6 @@ class _HelpMeState extends State<HelpMe> {
                                   timeInSecForIosWeb: 1,
                                   textColor: Colors.white,
                                   fontSize: 15.0);
-                              sendAndRetrieveMessage();
                             })
                       ],
                     );

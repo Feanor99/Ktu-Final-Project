@@ -136,8 +136,11 @@ class _MyHomePageState extends State<MyHomePage> {
             break;
           case '2':
             if (double.parse(message.data['magnitude']) > 5.4)
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DoYouSafe()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          DoYouSafe(message.data['earthquake_id'])));
             else
               Navigator.push(
                   context,

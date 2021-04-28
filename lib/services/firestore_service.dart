@@ -18,7 +18,9 @@ class FirestoreService {
       "notifyToken": notifyToken,
       "lastLocation": "",
       "homeLocation": "",
-      "AffectedFrom": <String>[]
+      "AffectedFrom": <String>[],
+      "EqHelpRequests": <String>[],
+      "ImSafe": <String>[]
     }).then((value) {
       print('user added');
     });
@@ -214,6 +216,34 @@ class FirestoreService {
         .doc(id)
         .update({"AffectedFrom": FieldValue.arrayUnion(temp)}).then((value) {
       print('Affacted from updated');
+    });
+  }
+
+  static Future<void> eqHelpRequest(dynamic earthquakeId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final id = user.uid;
+    List<dynamic> temp = [];
+    temp.add(earthquakeId);
+    // Call the user's CollectionReference to add a new user
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"EqHelpRequests": FieldValue.arrayUnion(temp)}).then((value) {
+      print('EqHelpRequests from updated');
+    });
+  }
+
+  static Future<void> imSafe(dynamic earthquakeId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final id = user.uid;
+    List<dynamic> temp = [];
+    temp.add(earthquakeId);
+    // Call the user's CollectionReference to add a new user
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"ImSafe": FieldValue.arrayUnion(temp)}).then((value) {
+      print('imsafe updated');
     });
   }
 }
