@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
+import 'package:flutter_app/screens/messages.dart';
 import 'package:flutter_app/screens/toplanma_alanlari.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -44,15 +45,27 @@ class MainDrawer extends StatelessWidget {
                           builder: (context) => DepremHazirlik()));
                 })),
         Card(
-            child: ListTile(
-          leading: Icon(Icons.directions_run),
-          title: Text('Toplanma Alanları',
-              style: TextStyle(
-                fontSize: 16,
-              )),
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ToplanmaAlanlari())),
-        )),
+          child: ListTile(
+            leading: Icon(Icons.directions_run),
+            title: Text('Toplanma Alanları',
+                style: TextStyle(
+                  fontSize: 16,
+                )),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ToplanmaAlanlari())),
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: Icon(Icons.directions_run),
+            title: Text('Mesajlarım',
+                style: TextStyle(
+                  fontSize: 16,
+                )),
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Messages())),
+          ),
+        ),
       ],
     ));
   }

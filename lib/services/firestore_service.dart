@@ -201,7 +201,6 @@ class FirestoreService {
     if (userSnapshot.size <= 0) return null;
 
     final userSnap = userSnapshot.docs[0];
-
     return userSnap.data();
   }
 
@@ -245,5 +244,76 @@ class FirestoreService {
         .update({"ImSafe": FieldValue.arrayUnion(temp)}).then((value) {
       print('imsafe updated');
     });
+  }
+
+  static Future<void> SendMessageWithPhoneNumber(String phoneNumber) async {
+    final user = FirebaseAuth.instance.currentUser;
+  }
+
+  static Future<Map<String, dynamic>> GetDmRoom(String phoneNumber) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final instance = FirebaseFirestore.instance;
+
+    DocumentSnapshot ds =
+        await instance.collection('users').doc(user.uid).get();
+
+    final userData = ds.data();
+
+    if (!userData.containsKey('dmRooms')) return null;
+
+    final entries = userData['dmRooms'];
+    for (String el in entries.keys) {
+      if (entries[el]['receiverPhoneNumber'] == phoneNumber) {
+        return entries[el];
+      }
+    }
+    return null;
+  }
+
+  static Future<CollectionReference> CreateDmRoom(
+      String receiverPhoneNumber) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final instance = FirebaseFirestore.instance;
+
+    Uuid uuid = Uuid();
+    String roomId = uuid.v4();
+    CollectionReference cf =
+        instance.collection('dmRooms').doc(roomId).collection('messages');
+
+    DocumentReference dr = instance.collection('users').doc(user.uid);
+
+    DocumentSnapshot ds = await dr.get();
+
+    var userData = ds.data();
+
+    if (!userData.containsKey('dmRooms')) userData['dmRooms'] = {};
+
+    userData['dmRooms'][roomId] = {
+      'receiverPhoneNumber': receiverPhoneNumber,
+      'uid': roomId,
+      'userId': user.uid
+    };
+
+    await dr.update(userData);
+
+    var receiverUserData =
+        await getUserDataWithPhoneNumber(receiverPhoneNumber);
+
+    final receiverUserSnap = await instance
+        .collection('users')
+        .where('phone', isEqualTo: receiverPhoneNumber)
+        .get();
+
+    if (!receiverUserData.containsKey('dmRooms'))
+      receiverUserData['dmRooms'] = {};
+
+    receiverUserData['dmRooms'][roomId] = {
+      'receiverPhoneNumber': userData['phone'],
+      'uid': roomId,
+      'userId': receiverUserSnap.docs[0].id
+    };
+
+    receiverUserSnap.docs[0].reference.update(receiverUserData);
+    return cf;
   }
 }

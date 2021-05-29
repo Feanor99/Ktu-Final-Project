@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_app/screens/contacts_list.dart';
+import 'package:flutter_app/screens/dm_room.dart';
+import 'package:flutter_app/services/firestore_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -27,6 +29,18 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     getData();
+  }
+
+  openMessageRoom(name, receiverPhoneNumber) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DmRoom(
+          receiverName: name,
+          phoneNumber: receiverPhoneNumber,
+        ),
+      ),
+    );
   }
 
   @override
@@ -60,6 +74,9 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
                             return ListTile(
                                 title: Text(userList[index]['displayName']),
                                 subtitle: Text(userList[index]['phoneNumber']),
+                                onTap: () => openMessageRoom(
+                                    userList[index]['displayName'],
+                                    userList[index]['phoneNumber']),
                                 trailing: new Container(
                                     child: new RaisedButton.icon(
                                   color: Colors.red,
