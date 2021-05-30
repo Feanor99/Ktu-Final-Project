@@ -6,6 +6,7 @@ import 'package:flutter_app/models/message.dart';
 import 'package:flutter_app/screens/did_you_feel.dart';
 import 'package:flutter_app/screens/do_you_safe.dart';
 import 'package:flutter_app/screens/help_me.dart';
+import 'package:flutter_app/screens/home_location.dart';
 import 'package:flutter_app/screens/notification_location.dart';
 import 'package:flutter_app/screens/notifications.dart';
 import 'package:flutter_app/services/authservice.dart';
@@ -60,11 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<dynamic> firestoreUserData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
-    /*  var location = await GetLocation.checkPermissionThenGetLocation();
-
-    String userLocation =
-        location.latitude.toString() + ", " + location.longitude.toString();*/ //TODO:
-
     String phone = pref.getString("phone") ?? "";
     if (phone == "") return;
 
@@ -110,7 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
     bool check = pref.getBool("first") ?? false;
     if (!check) {
       pref.setBool("first", true);
-      firestoreUserData();
+      firestoreUserData().then((value) => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomeLocation())));
     }
   }
 
@@ -164,11 +161,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     checkUser();
-
-    // Message message = new Message("merhaba nasılsınız acaba");
-    // message.encryptAndSendMessage();
-    // print("---------");
-    // message.decryptRecivedMessage();
   }
 
   @override

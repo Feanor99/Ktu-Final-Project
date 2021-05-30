@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/deprem_hazirlik.dart';
+import 'package:flutter_app/screens/home_location.dart';
 import 'package:flutter_app/screens/messages.dart';
 import 'package:flutter_app/screens/toplanma_alanlari.dart';
 import 'package:flutter_app/screens/toplanma_alanlari_izmir.dart';
@@ -77,6 +78,17 @@ class MainDrawer extends StatelessWidget {
                 )),
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (context) => Messages())),
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: Icon(Icons.home),
+            title: Text('Ev Konumum',
+                style: TextStyle(
+                  fontSize: 16,
+                )),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => HomeLocation())),
           ),
         ),
       ],

@@ -62,6 +62,19 @@ class FirestoreService {
     });
   }
 
+  static Future<void> updateHomeLocation(String location) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final id = user.uid;
+
+    // Call the user's CollectionReference to add a new user
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"homeLocation": location}).then((value) {
+      print('home updated');
+    });
+  }
+
   static Future<List<dynamic>> getAllUserPhone() async {
     final instance = FirebaseFirestore.instance;
     final docsSnapshot =
