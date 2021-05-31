@@ -12,7 +12,8 @@ class Earthquake {
       this.depht,
       this.size,
       this.location,
-      this.city});
+      this.city,
+      this.distict});
 
   String date;
   String time;
@@ -22,15 +23,16 @@ class Earthquake {
   String size;
   String location;
   String city;
+  String distict;
 
   factory Earthquake.fromJson(Map<String, dynamic> json) => Earthquake(
-        date: json['tarih'],
-        time: json['saat'],
-        latitude: json['enlem'],
-        longitude: json['boylam'],
-        depht: json['derinlik'],
-        size: json['buyukluk'],
-        location: json['yer'],
-        city: json['sehir'],
-      );
+      date: json['tarih'],
+      time: json['saat'],
+      latitude: json['enlem'],
+      longitude: json['boylam'],
+      depht: json['derinlik'],
+      size: json['buyukluk'],
+      location: json['yer'],
+      city: json['sehir'],
+      distict: json['ilce']);
 }

@@ -32,18 +32,12 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
 
   getShakeDatas() async {
     var response =
-        await http.get(Uri.parse("https://turkiyedepremapi.herokuapp.com/api"));
+        await http.get(Uri.parse("http://139.162.134.62/depremler-afad?min=3"));
     //If the http request is successful the statusCode will be 200
-    if (response.statusCode == 200) {
-      String htmlToParse = response.body;
-
-      dynamic data = json.decode(htmlToParse);
-      List<Earthquake> temp = [];
-      data.forEach((value) {
-        temp.add(Earthquake.fromJson(value));
-      });
-
-      if (temp == null) {
+    if (response.statusCode != 200) {
+      response = await http
+          .get(Uri.parse("http://139.162.134.62/depremler-kandilli?min=3"));
+      if (response.statusCode != 200) {
         Navigator.of(context).pop();
         Fluttertoast.showToast(
             msg: "Lütfen internet bağlantınızı kontrol edip tekrar deneyiniz.",
@@ -55,16 +49,17 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
             fontSize: 16.0);
         return;
       }
+    }
 
-      shakeList =
-          temp.where((element) => double.parse(element.size) > 3.0).toList();
+    String htmlToParse = response.body;
 
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } else {
+    dynamic data = json.decode(htmlToParse);
+    List<Earthquake> temp = [];
+    data.forEach((value) {
+      temp.add(Earthquake.fromJson(value));
+    });
+
+    if (temp == null) {
       Navigator.of(context).pop();
       Fluttertoast.showToast(
           msg: "Lütfen internet bağlantınızı kontrol edip tekrar deneyiniz.",
@@ -74,6 +69,15 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
+      return;
+    }
+
+    shakeList = temp;
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -206,7 +210,7 @@ class _ShakeListScreenState extends State<ShakeListScreen> {
                                         SizedBox(
                                           height: 5,
                                         ),
-                                        Text(shakeList[index].city),
+                                        Text(shakeList[index].distict),
                                       ],
                                     ),
                                   ),
