@@ -107,7 +107,11 @@ class _MessagesState extends State<Messages> {
                 );
               },
             )
-          : Text("Henuz hic mesajin yok"),
+          : Center(
+              child: Text(
+              "Mesaj kutunuz boş",
+              style: TextStyle(fontSize: 20),
+            )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add_comment_outlined),
         onPressed: () => Navigator.push(

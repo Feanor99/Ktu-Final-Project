@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class DmRoom extends StatefulWidget {
   final String receiverName;
@@ -124,11 +125,12 @@ class _DmRoomState extends State<DmRoom> {
 
   @override
   Widget build(BuildContext context) {
+    final f = new DateFormat('yyyy-MM-dd | hh:mm');
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.receiverName),
       ),
-      backgroundColor: Colors.orange,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Expanded(
@@ -167,11 +169,12 @@ class _DmRoomState extends State<DmRoom> {
                                     child: Container(
                                       padding: EdgeInsets.only(
                                           left: 12,
+                                          right: 12,
                                           top: 6,
-                                          bottom: 8,
-                                          right: 12),
+                                          bottom: 8),
                                       child: Container(
-                                        padding: EdgeInsets.all(16),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16),
                                         constraints: BoxConstraints(
                                           minWidth: 100,
                                           maxWidth: MediaQuery.of(context)
@@ -194,13 +197,27 @@ class _DmRoomState extends State<DmRoom> {
                                             bottomRight: Radius.circular(10),
                                           ),
                                           color: data['senderId'] == user.uid
-                                              ? Colors.green[600]
-                                              : Colors.white70,
+                                              ? Colors.green[200]
+                                              : Colors.grey[300],
                                         ),
                                         child: Stack(children: [
-                                          Text(
-                                            data['content'],
-                                          ),
+                                          ListTile(
+                                            contentPadding: EdgeInsets.zero,
+                                            dense: true,
+                                            title: Text(
+                                              data['content'],
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                            subtitle: Text(
+                                              f
+                                                  .format(data['createdAt']
+                                                      .toDate()
+                                                      .toLocal())
+                                                  .toString(),
+                                              style: TextStyle(fontSize: 11),
+                                              textAlign: TextAlign.right,
+                                            ),
+                                          )
                                         ]),
                                       ),
                                     ),
@@ -232,6 +249,8 @@ class _DmRoomState extends State<DmRoom> {
             ),
           ),
           Container(
+              child: Padding(
+            padding: EdgeInsets.all(6),
             child: Row(
               children: [
                 Flexible(
@@ -257,7 +276,7 @@ class _DmRoomState extends State<DmRoom> {
                     child: Text("Send"))
               ],
             ),
-          )
+          ))
         ],
       ),
     );
