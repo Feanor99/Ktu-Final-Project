@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/firestore_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class DmRoom extends StatefulWidget {
   final String receiverName;
@@ -24,7 +28,6 @@ class _DmRoomState extends State<DmRoom> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     SharedPreferences.getInstance().then((value) {
       setState(() {
@@ -65,6 +68,58 @@ class _DmRoomState extends State<DmRoom> {
     };
 
     await roomRef.add(message);
+
+    // send notification
+    await sendNotification(msg);
+  }
+
+  Future sendNotification(String message) async {
+    var receiverUser =
+        await FirestoreService.getUserDataWithPhoneNumber(widget.phoneNumber);
+
+    if (receiverUser == null) return;
+
+    if (!receiverUser.containsKey('notifyToken')) return;
+
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String senderName;
+    if (receiverUser.containsKey('userList')) {
+      receiverUser['userList'].forEach((val) {
+        if (val['phoneNumber'] == pref.getString('phone'))
+          senderName = val['displayName'];
+      });
+    }
+
+    String token = receiverUser['notifyToken'];
+    final String serverToken =
+        'AAAAXTCsRjI:APA91bEVJujo9YTgZgB1KwgJJBYjLavDx857efILIh7mkJCw_XZeMu1Qu-gF5tCSwtoshyZTJoo913uQjHcz7DnIovDytqTFPHm7pgmuuveTG_Yye_ngxVMWQ2eW3f8d1UQnLBZXBOCU';
+
+    await http.post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=$serverToken',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'body': '$senderName: $message',
+            'title': 'Okunmamış mesajınız var',
+          },
+          'priority': 'high',
+          'data': <String, dynamic>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'notification_id': '5',
+          },
+          'to': token,
+        },
+      ),
+    );
+
+    final Completer<Map<String, dynamic>> completer =
+        Completer<Map<String, dynamic>>();
+
+    return completer.future;
   }
 
   @override
@@ -73,11 +128,11 @@ class _DmRoomState extends State<DmRoom> {
       appBar: AppBar(
         title: Text(widget.receiverName),
       ),
+      backgroundColor: Colors.orange,
       body: Column(
         children: [
           Expanded(
             child: Container(
-              color: Colors.white60,
               child: room != null
                   ? StreamBuilder<QuerySnapshot>(
                       stream: roomRef
@@ -99,20 +154,74 @@ class _DmRoomState extends State<DmRoom> {
                           children: snapshot.data.docs
                               .map((DocumentSnapshot document) {
                             var data = document.data();
-                            return new ListTile(
-                              title: new Text(
-                                data['senderId'] == user.uid
-                                    ? userName
-                                    : widget.receiverName,
-                                textAlign: data['senderId'] == user.uid
-                                    ? TextAlign.left
-                                    : TextAlign.right,
-                              ),
-                              subtitle: new Text(
-                                data['content'],
-                                textAlign: data['senderId'] == user.uid
-                                    ? TextAlign.left
-                                    : TextAlign.right,
+                            Timestamp ts = data['createdAt'];
+                            DateTime dt = ts.toDate().toLocal();
+
+                            return new Container(
+                              child: Stack(
+                                children: [
+                                  Align(
+                                    alignment: data['senderId'] == user.uid
+                                        ? Alignment.centerLeft
+                                        : Alignment.centerRight,
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          left: 12,
+                                          top: 6,
+                                          bottom: 8,
+                                          right: 12),
+                                      child: Container(
+                                        padding: EdgeInsets.all(16),
+                                        constraints: BoxConstraints(
+                                          minWidth: 100,
+                                          maxWidth: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              2 /
+                                              3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(
+                                                data['senderId'] == user.uid
+                                                    ? 1
+                                                    : 10),
+                                            topRight: Radius.circular(
+                                                data['senderId'] == user.uid
+                                                    ? 10
+                                                    : 1),
+                                            bottomLeft: Radius.circular(10),
+                                            bottomRight: Radius.circular(10),
+                                          ),
+                                          color: data['senderId'] == user.uid
+                                              ? Colors.green[600]
+                                              : Colors.white70,
+                                        ),
+                                        child: Stack(children: [
+                                          Text(
+                                            data['content'],
+                                          ),
+                                        ]),
+                                      ),
+                                    ),
+                                  ),
+                                  // Positioned(
+                                  //   right: data['senderId'] == user.uid
+                                  //       ? MediaQuery.of(context).size.width - 44
+                                  //       : 16,
+                                  //   bottom: 9,
+                                  //   child: Text(
+                                  //     dt
+                                  //         .toString()
+                                  //         .split(':')
+                                  //         .getRange(0, 2)
+                                  //         .join(':')
+                                  //         .split(' ')[1],
+                                  //     style: TextStyle(
+                                  //         color: Colors.black87, fontSize: 10),
+                                  //   ),
+                                  // ),
+                                ],
                               ),
                             );
                           }).toList(),

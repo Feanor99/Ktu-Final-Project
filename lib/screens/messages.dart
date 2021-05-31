@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/dm_room.dart';
 import 'package:flutter_app/screens/users_list.dart';
@@ -14,10 +15,10 @@ class Messages extends StatefulWidget {
 
 class _MessagesState extends State<Messages> {
   var messageRooms = [];
-
+  String myName;
+  final user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     getAllMessageRooms();
@@ -34,9 +35,28 @@ class _MessagesState extends State<Messages> {
     for (var el in userData['dmRooms'].values) {
       for (var recUser in userData['userList']) {
         if (recUser['phoneNumber'] == el['receiverPhoneNumber']) {
+          QuerySnapshot qs = await FirebaseFirestore.instance
+              .collection('dmRooms')
+              .doc(el['uid'])
+              .collection('messages')
+              .orderBy('createdAt', descending: true)
+              .limit(1)
+              .get();
+
+          var msgData = qs.docs[0].data();
+          msgData['createdAt'] = msgData['createdAt']
+              .toDate()
+              .toLocal()
+              .toString()
+              .split(':')
+              .getRange(0, 2)
+              .join(':');
+
           tempRooms.add({
             'name': recUser['displayName'],
-            'phone': recUser['phoneNumber']
+            'phone': recUser['phoneNumber'],
+            'uid': el['uid'],
+            'lastMessage': msgData
           });
         }
       }
@@ -44,6 +64,7 @@ class _MessagesState extends State<Messages> {
 
     setState(() {
       messageRooms = tempRooms;
+      myName = prefs.getString('name');
     });
   }
 
@@ -59,8 +80,10 @@ class _MessagesState extends State<Messages> {
                 color: Colors.black,
               ),
               itemCount: messageRooms.length,
+              padding: EdgeInsets.symmetric(vertical: 4),
               itemBuilder: (c, i) {
                 return ListTile(
+                  trailing: Text(messageRooms[i]['lastMessage']['createdAt']),
                   onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -69,6 +92,18 @@ class _MessagesState extends State<Messages> {
                                 phoneNumber: messageRooms[i]['phone'],
                               ))),
                   title: Text(messageRooms[i]['name']),
+                  subtitle: Text(
+                    (messageRooms[i]['lastMessage']['senderId'] == user.uid
+                            ? myName
+                            : messageRooms[i]['name']) +
+                        ": " +
+                        messageRooms[i]['lastMessage']['content'],
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.grey[800],
+                    child: Text(messageRooms[i]['name'][0]),
+                  ),
                 );
               },
             )
