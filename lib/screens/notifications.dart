@@ -59,7 +59,11 @@ class _NotificationsState extends State<Notifications> {
                       .render(context, removeNotification);
                 },
               )
-            : Text("Henüz hiç bildirim almadın"),
+            : Center(
+                child: Text(
+                "Bildirim yok",
+                style: TextStyle(fontSize: 20),
+              )),
       ),
     );
   }

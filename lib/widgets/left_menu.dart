@@ -71,7 +71,7 @@ class MainDrawer extends StatelessWidget {
         ),
         Card(
           child: ListTile(
-            leading: Icon(Icons.directions_run),
+            leading: Icon(Icons.message),
             title: Text('Mesajlarım',
                 style: TextStyle(
                   fontSize: 16,
