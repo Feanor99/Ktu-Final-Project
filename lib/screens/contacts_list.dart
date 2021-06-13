@@ -222,183 +222,168 @@ class _ContactList extends State<ContactList> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    return MaterialApp(
-        theme: ThemeData(
-          fontFamily: 'Ubuntu',
-          primarySwatch: Colors.blue, // page deafult font type
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => UsersList()),
+          ).then((value) => setState(() {})),
         ),
-        home: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UsersList()),
-              ).then((value) => setState(() {})),
+        title: Text('Yeni Kişi Ekle'),
+      ),
+      body: Container(
+        padding: EdgeInsets.only(top: 10, bottom: 25),
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(20),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                    labelText: 'Ara',
+                    border: new OutlineInputBorder(
+                        borderSide: new BorderSide(color: Colors.blue)),
+                    prefixIcon: Icon(Icons.search, color: Colors.blue)),
+              ),
             ),
-            title: Text('Yeni Kişi Ekle'),
-          ),
-          body: Container(
-            padding: EdgeInsets.only(top: 10, bottom: 25),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(20),
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                        labelText: 'Ara',
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(color: Colors.blue)),
-                        prefixIcon: Icon(Icons.search, color: Colors.blue)),
-                  ),
-                ),
-                Expanded(
-                  child: _isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : _isNULL
-                          ? Center(child: Text("Kayıtlı Kullanıcı Bulunamadı."))
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: isSearching == true
-                                  ? contactsFiltered.length
-                                  : contacts.length,
-                              itemBuilder: (context, index) {
-                                Contact contact = isSearching == true
-                                    ? contactsFiltered[index]
-                                    : contacts[index];
-                                return ListTile(
-                                    title: Text(contact.displayName),
-                                    subtitle: Text(contact.phones.length > 0
-                                        ? contact.phones.elementAt(0).value
-                                        : ''),
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text(contact.displayName),
-                                            content: Text(
-                                                contact.phones.length > 0
-                                                    ? contact.phones
+            Expanded(
+              child: _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : _isNULL
+                      ? Center(child: Text("Kayıtlı Kullanıcı Bulunamadı."))
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: isSearching == true
+                              ? contactsFiltered.length
+                              : contacts.length,
+                          itemBuilder: (context, index) {
+                            Contact contact = isSearching == true
+                                ? contactsFiltered[index]
+                                : contacts[index];
+                            return ListTile(
+                                title: Text(contact.displayName),
+                                subtitle: Text(contact.phones.length > 0
+                                    ? contact.phones.elementAt(0).value
+                                    : ''),
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(contact.displayName),
+                                        content: Text(contact.phones.length > 0
+                                            ? contact.phones.elementAt(0).value
+                                            : ''),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: Text("Kişilerime Kaydet"),
+                                            onPressed: () async {
+                                              if (contact.phones.length > 0) {
+                                                await addContact(
+                                                    contact.phones
                                                         .elementAt(0)
-                                                        .value
-                                                    : ''),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                child:
-                                                    Text("Kişilerime Kaydet"),
-                                                onPressed: () async {
-                                                  if (contact.phones.length >
-                                                      0) {
-                                                    await addContact(
-                                                        contact.phones
-                                                            .elementAt(0)
-                                                            .value,
-                                                        contact.displayName);
-                                                  } else {
-                                                    Fluttertoast.showToast(
-                                                        msg:
-                                                            "Telefon Numarası Gereklidir",
-                                                        toastLength:
-                                                            Toast.LENGTH_LONG,
-                                                        gravity:
-                                                            ToastGravity.BOTTOM,
-                                                        backgroundColor:
-                                                            Colors.black54,
-                                                        timeInSecForIosWeb: 1,
-                                                        textColor: Colors.white,
-                                                        fontSize: 15.0);
-                                                  }
-                                                  Navigator.pop(context);
-                                                },
-                                              )
-                                            ],
-                                          );
-                                        },
+                                                        .value,
+                                                    contact.displayName);
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        "Telefon Numarası Gereklidir",
+                                                    toastLength:
+                                                        Toast.LENGTH_LONG,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    backgroundColor:
+                                                        Colors.black54,
+                                                    timeInSecForIosWeb: 1,
+                                                    textColor: Colors.white,
+                                                    fontSize: 15.0);
+                                              }
+                                              Navigator.pop(context);
+                                            },
+                                          )
+                                        ],
                                       );
                                     },
-                                    trailing: new Container(
-                                        child: new RaisedButton.icon(
-                                      color: Colors.blue,
-                                      textColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text(contact.displayName),
-                                              content: Text(
-                                                  contact.phones.length > 0
-                                                      ? contact.phones
+                                  );
+                                },
+                                trailing: new Container(
+                                    child: new RaisedButton.icon(
+                                  color: Colors.blue,
+                                  textColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(contact.displayName),
+                                          content: Text(
+                                              contact.phones.length > 0
+                                                  ? contact.phones
+                                                      .elementAt(0)
+                                                      .value
+                                                  : ''),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              child: Text("Kişilerime Kaydet"),
+                                              onPressed: () async {
+                                                if (contact.phones.length > 0) {
+                                                  await addContact(
+                                                      contact.phones
                                                           .elementAt(0)
-                                                          .value
-                                                      : ''),
-                                              actions: <Widget>[
-                                                FlatButton(
-                                                  child:
-                                                      Text("Kişilerime Kaydet"),
-                                                  onPressed: () async {
-                                                    if (contact.phones.length >
-                                                        0) {
-                                                      await addContact(
-                                                          contact.phones
-                                                              .elementAt(0)
-                                                              .value,
-                                                          contact.displayName);
-                                                    } else {
-                                                      Fluttertoast.showToast(
-                                                          msg:
-                                                              "Telefon Numarası Gereklidir",
-                                                          toastLength:
-                                                              Toast.LENGTH_LONG,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM,
-                                                          backgroundColor:
-                                                              Colors.black54,
-                                                          timeInSecForIosWeb: 1,
-                                                          textColor:
-                                                              Colors.white,
-                                                          fontSize: 15.0);
-                                                    }
-                                                    Navigator.pop(context);
-                                                  },
-                                                )
-                                              ],
-                                            );
-                                          },
+                                                          .value,
+                                                      contact.displayName);
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          "Telefon Numarası Gereklidir",
+                                                      toastLength:
+                                                          Toast.LENGTH_LONG,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      backgroundColor:
+                                                          Colors.black54,
+                                                      timeInSecForIosWeb: 1,
+                                                      textColor: Colors.white,
+                                                      fontSize: 15.0);
+                                                }
+                                                Navigator.pop(context);
+                                              },
+                                            )
+                                          ],
                                         );
                                       },
-                                      label: Text(
-                                        'Ekle',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      icon: Icon(
-                                        Icons.add,
-                                        color: Colors.white,
-                                      ),
-                                    )),
-                                    leading: Container(
-                                        width: 50,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.blue),
-                                        child: CircleAvatar(
-                                            child: Text(contact.initials(),
-                                                style: TextStyle(
-                                                    color: Colors.white)),
-                                            backgroundColor:
-                                                Colors.transparent)));
-                              },
-                            ),
-                ),
-              ],
+                                    );
+                                  },
+                                  label: Text(
+                                    'Ekle',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  icon: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
+                                )),
+                                leading: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.blue),
+                                    child: CircleAvatar(
+                                        child: Text(contact.initials(),
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        backgroundColor: Colors.transparent)));
+                          },
+                        ),
             ),
-          ),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 }

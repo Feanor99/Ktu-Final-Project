@@ -115,68 +115,61 @@ class _HelpMeState extends State<HelpMe> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'Ubuntu',
-        primarySwatch: Colors.red, // page deafult font type
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Text('Yardım İste'),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: Container(
-          child: Center(
-            child: RaisedButton.icon(
-              padding:
-                  EdgeInsets.only(left: 30, right: 30, top: 15, bottom: 15),
-              color: Colors.red,
-              textColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Yardım İste'),
-                      content: Text(
-                          'Gönder butonuna bastığınızda kişi listenizdekilere bildirim gönderilecektir, onaylıyor musunuz?'),
-                      actions: <Widget>[
-                        FlatButton(
-                            child: Text("Gönder"),
-                            onPressed: () async {
-                              sendAndRetrieveMessage();
-                              if (eqID != null)
-                                await FirestoreService.eqHelpRequest(eqID);
-                              Route route = MaterialPageRoute(
-                                  builder: (context) => DepremHazirlik());
-                              Navigator.pushReplacement(context, route);
-                              Fluttertoast.showToast(
-                                  msg: "Yardım Çağrısı Gönderildi",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.BOTTOM,
-                                  backgroundColor: Colors.black54,
-                                  timeInSecForIosWeb: 1,
-                                  textColor: Colors.white,
-                                  fontSize: 15.0);
-                            })
-                      ],
-                    );
-                  },
-                );
-              },
-              label: Text(
-                'Yardım Çağrısı Gönder',
-                style: TextStyle(color: Colors.white),
-              ),
-              icon: Icon(
-                Icons.warning,
-                color: Colors.white,
-              ),
+        title: Text('Yardım İste'),
+      ),
+      body: Container(
+        child: Center(
+          child: RaisedButton.icon(
+            padding: EdgeInsets.only(left: 30, right: 30, top: 15, bottom: 15),
+            color: Colors.red,
+            textColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Yardım İste'),
+                    content: Text(
+                        'Gönder butonuna bastığınızda kişi listenizdekilere bildirim gönderilecektir, onaylıyor musunuz?'),
+                    actions: <Widget>[
+                      FlatButton(
+                          child: Text("Gönder"),
+                          onPressed: () async {
+                            sendAndRetrieveMessage();
+                            if (eqID != null)
+                              await FirestoreService.eqHelpRequest(eqID);
+                            Route route = MaterialPageRoute(
+                                builder: (context) => DepremHazirlik());
+                            Navigator.pushReplacement(context, route);
+                            Fluttertoast.showToast(
+                                msg: "Yardım Çağrısı Gönderildi",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.black54,
+                                timeInSecForIosWeb: 1,
+                                textColor: Colors.white,
+                                fontSize: 15.0);
+                          })
+                    ],
+                  );
+                },
+              );
+            },
+            label: Text(
+              'Yardım Çağrısı Gönder',
+              style: TextStyle(color: Colors.white),
+            ),
+            icon: Icon(
+              Icons.warning,
+              color: Colors.white,
             ),
           ),
         ),
