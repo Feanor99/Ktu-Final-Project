@@ -125,7 +125,7 @@ class _DmRoomState extends State<DmRoom> {
 
   @override
   Widget build(BuildContext context) {
-    final f = new DateFormat('yyyy-MM-dd | hh:mm');
+    final f = new DateFormat('yyyy-MM-dd | H:mm');
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.receiverName),

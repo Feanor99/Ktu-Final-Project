@@ -141,7 +141,8 @@ class _HelpMeState extends State<HelpMe> {
                         'Gönder butonuna bastığınızda kişi listenizdekilere bildirim gönderilecektir, onaylıyor musunuz?'),
                     actions: <Widget>[
                       FlatButton(
-                          child: Text("Gönder"),
+                          child: Text("Gönder", style: TextStyle(color: Colors.white)),
+                          color: Colors.red,
                           onPressed: () async {
                             sendAndRetrieveMessage();
                             if (eqID != null)

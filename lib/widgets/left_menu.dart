@@ -12,13 +12,13 @@ class MainDrawer extends StatelessWidget {
         child: Column(
       children: <Widget>[
         Container(
-          height: 140.0,
-          width: double.infinity,
+          height: 165.0,
           color: Colors.red,
           padding: const EdgeInsets.all(20),
           child: Center(
               child: Column(
             children: <Widget>[
+              Padding(padding: EdgeInsets.only(top: 25), child:
               Container(
                 width: 100,
                 height: 100,
@@ -30,8 +30,8 @@ class MainDrawer extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               )
-            ],
-          )),
+              )],
+          ),),
         ),
         Card(
             child: ListTile(

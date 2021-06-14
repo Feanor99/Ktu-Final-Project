@@ -53,6 +53,7 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
               Navigator.of(context).popUntil((route) => route.isFirst),
         ),
         title: Text('Kişilerim'),
+        backgroundColor: Colors.blue,
       ),
       body: Container(
         padding: EdgeInsets.only(left: 10, right: 10),
@@ -140,7 +141,7 @@ class _UsersList extends State<UsersList> with SingleTickerProviderStateMixin {
                                   ),
                                   child: CircleAvatar(
                                       child: Text(
-                                          userList[index]['displayName'][0]),
+                                          userList[index]['displayName'][0], style: TextStyle(color: Colors.white)),
                                       backgroundColor: Colors.transparent)));
                         })),
             Container(

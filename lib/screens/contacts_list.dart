@@ -232,6 +232,7 @@ class _ContactList extends State<ContactList> {
           ).then((value) => setState(() {})),
         ),
         title: Text('Yeni Kişi Ekle'),
+        backgroundColor: Colors.blue,
       ),
       body: Container(
         padding: EdgeInsets.only(top: 10, bottom: 25),
