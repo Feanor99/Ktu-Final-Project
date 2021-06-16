@@ -164,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (this.mounted) checkNotificationData();
     });
-
+    print("lll");
     checkUser();
   }
 

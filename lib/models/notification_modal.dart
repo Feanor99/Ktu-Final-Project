@@ -55,27 +55,30 @@ class NotificationModel {
       child: Container(
         height: 80,
         child: Padding(
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           child: Row(
             children: [
               Expanded(
-                child: RichText(
-                  overflow: TextOverflow.fade,
-                  text: TextSpan(
-                    style: TextStyle(color: Colors.black),
-                    children: [
-                      TextSpan(
-                        text: this.senderName + ' ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                          text:
-                              'Sizden yardım istedi. Hemen tıklayın ve nerede olduğunu öğrenin '),
-                      TextSpan(
-                        text: '\n' + localDate(),
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 5),
+                  child: RichText(
+                    overflow: TextOverflow.fade,
+                    text: TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: this.senderName + ' ',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                            text:
+                                'Sizden yardım istedi. Hemen tıklayın ve nerede olduğunu öğrenin '),
+                        TextSpan(
+                          text: '\n' + localDate(),
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

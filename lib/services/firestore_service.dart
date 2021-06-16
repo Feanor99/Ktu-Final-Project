@@ -173,6 +173,7 @@ class FirestoreService {
       NotificationModel myModel = NotificationModel.fromJson(model);
       models.add(myModel);
     }
+    models.sort((a, b) => b.date.compareTo(a.date));
     return models;
   }
 
@@ -193,7 +194,6 @@ class FirestoreService {
     data.forEach((element) => {
           if (element['id'] != id) {newdata.add(element)}
         });
-    print(data);
     print(newdata);
     await instance
         .collection("allNotifications")
