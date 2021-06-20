@@ -1,2 +1,1 @@
-Bu projenin readmisini deðiþtiriyorum!
-
+# KTU Bitirme Projesi
